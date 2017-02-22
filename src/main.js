@@ -5,7 +5,7 @@ import App from "./App";
 
 (function() {
   function setup() {
-    console.log("setup();");
+    console.log("Void::Bookmarklet setup()");
     var data = {
       host: "pooreffort.com",
       apiRoot: "http://localhost:5000/",
@@ -33,10 +33,8 @@ import App from "./App";
   }
 
   if (document.body) {
-    console.log("document.body found");
     setup();
   } else {
-    console.log("waiting for DOMContentLoaded");
     document.addEventListener("DOMContentLoaded", setup);
   }
 }());
