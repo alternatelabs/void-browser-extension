@@ -1,10 +1,13 @@
 <template>
   <div class="void-bookmarklet">
     <span class="text"><strong>{{ host }}</strong> has been added to the void!</span>
+    <tags-input :tags="tags" placeholder="Add tag (Press [TAB] to add)" @tags-change="tagsChange"></tags-input>
   </div>
 </template>
 
 <script>
+import _ from "lodash";
+import api from "helpers/api";
 import TagsInput from "vue-tagsinput";
 
 export default {
@@ -26,6 +29,61 @@ export default {
       required: true,
     },
   },
+
+  data() {
+    return {
+      bookmark: {},
+      tags: []
+    };
+  },
+
+  created() {
+    this.findOrCreateBookmark();
+  },
+
+  methods: {
+    api() {
+      return api.instance(this.apiRoot, this.apiToken);
+    },
+
+    tagsChange(index, value) {
+      if (_.isString(value) && value.length) {
+        // new tag added
+        this.tags.splice(index, 0, { text: "#" + this.cleanTag(value) });
+      } else {
+        // tag removed
+        this.tags = _.without(this.tags, this.tags[index]);
+      }
+
+      this.updateBookmark();
+    },
+
+    cleanTag(tag) {
+      return tag.toLowerCase().replace(/[^a-z0-9\-\_]/, "");
+    },
+
+    findOrCreateBookmark() {
+      this.api().post("bookmarks", { url: window.location.href }).then(resp => {
+        console.log("Bookmark found!", resp.data);
+        this.bookmark = resp.data.data;
+      }).catch(resp => {
+        console.error("Error trying to find or create bookmark", resp);
+      });
+    },
+
+    updateBookmark() {
+      const tagNames = this.tags.map(t => this.cleanTag(t.text)).join(",");
+
+      console.log("updateBookmark", tagNames);
+
+      this.api().patch("bookmarks/" + this.bookmark.id, { tag_names: tagNames }).then(resp => {
+        console.log("Bookmark saved!", resp.data);
+        this.bookmark = resp.data.data;
+      }).catch(resp => {
+        console.error("Error updating bookmark", resp);
+      });
+    },
+  }
 };
 </script>
 
@@ -50,6 +108,16 @@ $font-stack: -apple-system, BlinkMacSystemFont,
     font-weight: 300;
     line-height: 24px;
     color: #444;
+  }
+
+  .tags-input {
+    font-family: $font-stack;
+
+    margin-top: 10px;
+    outline: none;
+    box-shadow: none;
+    border: solid 1px #d7d7d7;
+    border-radius: 4px;
   }
 }
 </style>

@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", function() {
   var data = {
     host: "pooreffort.com",
     apiRoot: "http://localhost:5000/",
-    token: "fake-token"
+    token: "a40e0b9b-a8c6-4118-8667-4dea6600bcbb"
   };
 
   var div = document.createElement("div");
