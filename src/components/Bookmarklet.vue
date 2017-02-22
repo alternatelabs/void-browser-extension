@@ -1,18 +1,32 @@
 <template>
   <div class="void-bookmarklet">
-    <span class="text"><strong>{{ title }}</strong> has been added to the void!</span>
+    <span class="text"><strong>{{ host }}</strong> has been added to the void!</span>
   </div>
 </template>
 
 <script>
+import TagsInput from "vue-tagsinput";
+
 export default {
-  name: 'bookmarklet',
-  data () {
-    return {
-      title: "Demo"
-    }
-  }
-}
+  name: "bookmarklet",
+
+  components: { TagsInput },
+
+  props: {
+    host: {
+      type: String,
+      required: true,
+    },
+    apiRoot: {
+      type: String,
+      required: true,
+    },
+    apiToken: {
+      type: String,
+      required: true,
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>

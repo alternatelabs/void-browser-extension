@@ -1,18 +1,29 @@
 <template>
   <div id="app">
-    <bookmarklet></bookmarklet>
+    <bookmarklet :host="siteData.host" :api-root="siteData.apiRoot" :api-token="siteData.token"></bookmarklet>
   </div>
 </template>
 
 <script>
-import Bookmarklet from './components/Bookmarklet'
+import Bookmarklet from "./components/Bookmarklet";
 
 export default {
-  name: 'app',
+  name: "app",
+
   components: {
     Bookmarklet
-  }
-}
+  },
+
+  props: {
+    siteData: {
+      type: Object,
+      required: true,
+      default() {
+        return {};
+      }
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
