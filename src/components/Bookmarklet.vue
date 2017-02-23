@@ -73,6 +73,9 @@ export default {
       this.savingState = "Creating bookmark&hellip;";
       this.api().post("bookmarks", { url: window.location.href }).then(resp => {
         this.bookmark = resp.data.data;
+        this.tags = this.bookmark.tags.map(t => {
+          return { text: "#" + t };
+        });
 
         setTimeout(() => {
           this.isLoading = false;
@@ -84,17 +87,18 @@ export default {
     },
 
     updateBookmark() {
-      const tagNames = this.tags.map(t => this.cleanTag(t.text)).join(",");
+      // const tagNames = this.tags.map(t => this.cleanTag(t.text)).join(",");
+      const tags = this.tags.map(t => this.cleanTag(t.text));
 
       this.isLoading = true;
       this.savingState = "Saving tags&hellip;";
 
-      this.api().patch("bookmarks/" + this.bookmark.id, { tag_names: tagNames }).then(resp => {
+      this.api().patch("bookmarks/" + this.bookmark.id, { tags }).then(resp => {
         this.bookmark = resp.data.data;
 
         setTimeout(() => {
           this.isLoading = false;
-          this.savingState = "Bookmark saved!";
+          this.savingState = "Tags saved!";
         }, 100);
       }).catch(resp => {
         console.error("Error updating bookmark", resp);
