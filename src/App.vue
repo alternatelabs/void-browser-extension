@@ -1,6 +1,6 @@
 <template>
-  <div id="app">
-    <bookmarklet :host="siteData.host" :api-root="siteData.apiRoot" :api-token="siteData.token"></bookmarklet>
+  <div id="app" @click="close">
+    <bookmarklet :host="siteData.host" :api-root="siteData.apiRoot" :api-token="siteData.token" @close="close" @click.native.stop.prevent></bookmarklet>
   </div>
 </template>
 
@@ -23,6 +23,12 @@ export default {
       }
     },
   },
+
+  methods: {
+    close() {
+      this.$emit("close");
+    }
+  }
 };
 </script>
 

@@ -27,8 +27,20 @@ import App from "./App";
     /* eslint-disable no-new */
     new Vue({
       data: { data },
-      template: '<App :site-data="data" />',
-      components: { App }
+      template: '<App :site-data="data" @close="close" />',
+      components: { App },
+
+      methods: {
+        close() {
+          console.log("Void::Bookmarklet remove()");
+          this.$destroy();
+          document.body.removeChild(this.$el);
+
+          if (scriptTag) {
+            document.body.removeChild(scriptTag);
+          }
+        }
+      }
     }).$mount(div);
   }
 

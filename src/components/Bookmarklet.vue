@@ -2,6 +2,7 @@
   <div class="void-bookmarklet">
     <span class="text"><strong>{{ host }}</strong> has been added to the void!</span>
     <tags-input :tags="tags" placeholder="Add tag (Press [TAB] to add)" @tags-change="tagsChange"></tags-input>
+    <span class="ui-button" @click="done">Done!</span>
     <div class="status-box">
       <loading :is-loading="isLoading" />
       <span class="saving-state" v-show="savingState" v-html="savingState"></span>
@@ -104,6 +105,10 @@ export default {
         console.error("Error updating bookmark", resp);
       });
     },
+
+    done() {
+      this.$emit("close");
+    },
   }
 };
 </script>
@@ -150,7 +155,7 @@ $font-stack: -apple-system, BlinkMacSystemFont,
   }
 
   .status-box {
-    padding: 10px 0 0;
+    padding: 15px 0 0;
     line-height: 20px;
 
     .loading {
@@ -161,6 +166,26 @@ $font-stack: -apple-system, BlinkMacSystemFont,
       display: block;
       margin-left: 30px;
       font-size: 14px;
+    }
+  }
+
+  .ui-button {
+    display: inline-block;
+    color: #fff;
+    border-radius: 4px;
+    padding: 0 8px;
+    font-size: 14px;
+    font-weight: 600;
+    float: right;
+    margin: 10px 0 0;
+    height: 30px;
+    line-height: 30px;
+    cursor: pointer;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.30);
+    background-image: linear-gradient(-180deg, #717171 0%, #888888 100%);
+
+    &:hover {
+      background-image: linear-gradient(-180deg, #535252 0%, #5D5D5D 100%);
     }
   }
 }
