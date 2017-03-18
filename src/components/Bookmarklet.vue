@@ -94,7 +94,7 @@ export default {
       this.isLoading = true;
       this.savingState = "Saving tags&hellip;";
 
-      this.api().patch("bookmarks/" + this.bookmark.id, { tags }).then(resp => {
+      this.api().put("bookmarks/" + this.bookmark.id, { tags }).then(resp => {
         this.bookmark = resp.data.data;
 
         setTimeout(() => {
