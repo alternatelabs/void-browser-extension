@@ -73,7 +73,7 @@ export default {
     findOrCreateBookmark() {
       this.savingState = "Creating bookmark&hellip;";
       this.api().post("bookmarks", { url: window.location.href }).then(resp => {
-        this.bookmark = resp.data.data;
+        this.bookmark = resp.data.data.attributes;
         this.tags = this.bookmark.tags.map(t => {
           return { text: "#" + t };
         });
@@ -95,7 +95,7 @@ export default {
       this.savingState = "Saving tags&hellip;";
 
       this.api().put("bookmarks/" + this.bookmark.id, { tags }).then(resp => {
-        this.bookmark = resp.data.data;
+        this.bookmark = resp.data.data.attributes;
 
         setTimeout(() => {
           this.isLoading = false;
