@@ -9,7 +9,7 @@ import App from "./App";
     var data = {
       host: "pooreffort.com",
       apiRoot: "http://localhost:5000/",
-      token: "a40e0b9b-a8c6-4118-8667-4dea6600bcbb"
+      token: "9164df683add82b04f6c9197e9a5446685dd25119b07c14d54afd935e4fc4605"
     };
 
     var div = document.createElement("div");

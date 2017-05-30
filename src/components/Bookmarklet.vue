@@ -1,8 +1,16 @@
 <template>
-  <div class="void-bookmarklet">
+  <div class="void-bookmarklet" :data-id="bookmark.id">
     <span class="text"><strong>{{ host }}</strong> has been added to the void!</span>
     <tags-input :tags="tags" placeholder="Add tag (Press [TAB] to add)" @tags-change="tagsChange"></tags-input>
-    <span class="ui-button" @click="done">Done!</span>
+
+    <div class="actions">
+      <label class="read-it-later" for="bookmark_read_later" @click.prevent="toggleReadLater">
+        <input type="checkbox" v-model="readLater" id="bookmark_read_later" name="bookmark_read_later" @click.prevent="toggleReadLater">
+        Read later
+      </label>
+      <span class="ui-button" @click="done">Done!</span>
+    </div>
+
     <div class="status-box">
       <loading :is-loading="isLoading" />
       <span class="saving-state" v-show="savingState" v-html="savingState"></span>
@@ -38,6 +46,7 @@ export default {
 
   data() {
     return {
+      readLater: false,
       bookmark: {},
       tags: [],
       isLoading: true,
@@ -52,6 +61,11 @@ export default {
   methods: {
     api() {
       return api.instance(this.apiRoot, this.apiToken);
+    },
+
+    toggleReadLater() {
+      this.readLater = !this.readLater;
+      this.updateBookmark();
     },
 
     tagsChange(index, value) {
@@ -74,6 +88,7 @@ export default {
       this.savingState = "Creating bookmark&hellip;";
       this.api().post("bookmarks", { url: window.location.href }).then(resp => {
         this.bookmark = resp.data.data.attributes;
+        this.readLater = this.bookmark["read-later"];
         this.tags = this.bookmark.tags.map(t => {
           return { text: "#" + t };
         });
@@ -91,15 +106,21 @@ export default {
       // const tagNames = this.tags.map(t => this.cleanTag(t.text)).join(",");
       const tags = this.tags.map(t => this.cleanTag(t.text));
 
-      this.isLoading = true;
-      this.savingState = "Saving tags&hellip;";
+      const params = {
+        tags,
+        read_later: this.readLater
+      };
 
-      this.api().put("bookmarks/" + this.bookmark.id, { tags }).then(resp => {
+      this.isLoading = true;
+      this.savingState = "Saving changes&hellip;";
+
+      this.api().put("bookmarks/" + this.bookmark.id, params).then(resp => {
         this.bookmark = resp.data.data.attributes;
+        this.readLater = this.bookmark["read-later"];
 
         setTimeout(() => {
           this.isLoading = false;
-          this.savingState = "Tags saved!";
+          this.savingState = "Changes saved!";
         }, 100);
       }).catch(resp => {
         console.error("Error updating bookmark", resp);
@@ -169,6 +190,22 @@ $font-stack: -apple-system, BlinkMacSystemFont,
     }
   }
 
+  .actions {
+    float: right;
+    display: flex;
+    justify-content: flex-end;
+    flex-flow: row;
+    align-items: center;
+    margin: 10px 0 0;
+  }
+
+  .read-it-later {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    margin-right: 12px;
+  }
+
   .ui-button {
     display: inline-block;
     color: #fff;
@@ -176,8 +213,6 @@ $font-stack: -apple-system, BlinkMacSystemFont,
     padding: 0 8px;
     font-size: 14px;
     font-weight: 600;
-    float: right;
-    margin: 10px 0 0;
     height: 30px;
     line-height: 30px;
     cursor: pointer;
