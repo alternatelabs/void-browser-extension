@@ -87,8 +87,8 @@ export default {
     findOrCreateBookmark() {
       this.savingState = "Creating bookmark&hellip;";
       this.api().post("bookmarks", { url: window.location.href }).then(resp => {
-        this.bookmark = resp.data.data.attributes;
-        this.readLater = this.bookmark["read-later"];
+        this.bookmark = resp.data.data;
+        this.readLater = this.bookmark.read_later;
         this.tags = this.bookmark.tags.map(t => {
           return { text: "#" + t };
         });
@@ -115,8 +115,8 @@ export default {
       this.savingState = "Saving changes&hellip;";
 
       this.api().put("bookmarks/" + this.bookmark.id, params).then(resp => {
-        this.bookmark = resp.data.data.attributes;
-        this.readLater = this.bookmark["read-later"];
+        this.bookmark = resp.data.data;
+        this.readLater = this.bookmark.read_later;
 
         setTimeout(() => {
           this.isLoading = false;
