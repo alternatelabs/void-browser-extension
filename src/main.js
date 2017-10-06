@@ -8,8 +8,8 @@ import App from "./App";
     console.log("Void::Bookmarklet setup()");
     var data = {
       host: "pooreffort.com",
-      apiRoot: "http://localhost:5000/",
-      token: "9164df683add82b04f6c9197e9a5446685dd25119b07c14d54afd935e4fc4605"
+      apiRoot: "http://void.dev/",
+      token: "a0699293-f2f6-4616-935f-31744e63b45a"
     };
 
     var div = document.createElement("div");
