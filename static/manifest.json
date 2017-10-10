@@ -1,0 +1,27 @@
+{
+
+  "description": "Bookmark web pages to Void",
+  "manifest_version": 2,
+  "name": "Void",
+  "version": "0.1",
+  "homepage_url": "https://void.pooreffort.com",
+  "icons": {
+    "48": "icons/void-48.png"
+  },
+
+  "permissions": [
+    "activeTab"
+  ],
+
+  "browser_action": {
+    "default_icon": "icons/void-32.png",
+    "theme_icons": [{
+        "light": "icons/void-32-light.png",
+        "dark": "icons/void-32.png",
+        "size": 32
+    }],
+    "default_title": "Void",
+    "default_popup": "popup.html"
+  }
+
+}
