@@ -1,8 +1,6 @@
 <template>
-  <div>
-    <div>
-      <bookmarker :host="siteData.host" :url="siteData.url" :api-root="siteData.apiRoot" :api-token="siteData.token" container-class="void-bookmarklet" @close="close" @click.native.stop.prevent />
-    </div>
+  <div id="app" @click="close">
+    <bookmarker :host="siteData.host" :api-root="siteData.apiRoot" :api-token="siteData.token" container-class="void-bookmarklet -bookmarklet" @close="close" @click.native.stop.prevent />
   </div>
 </template>
 
@@ -15,12 +13,6 @@ export default {
   components: {
     Bookmarker
   },
-  
-  data() {
-    return {
-      token: null,
-    };
-  },
 
   props: {
     siteData: {
@@ -32,10 +24,6 @@ export default {
     },
   },
 
-  created() {
-    this.token = localStorage.getItem("apiToken");
-  },
-
   methods: {
     close() {
       this.$emit("close");
@@ -45,4 +33,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+#app {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999999999;
+}
 </style>

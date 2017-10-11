@@ -6,6 +6,10 @@
   "version": "0.1",
   "homepage_url": "https://void.pooreffort.com",
   "icons": {
+    "16": "icons/icon-16.png",
+    "19": "icons/icon-19.png",
+    "38": "icons/icon-38.png",
+    "32": "icons/void-32.png",
     "48": "icons/void-48.png"
   },
 
@@ -14,14 +18,19 @@
   ],
 
   "browser_action": {
-    "default_icon": "icons/void-32.png",
-    "theme_icons": [{
-        "light": "icons/void-32-light.png",
-        "dark": "icons/void-32.png",
-        "size": 32
-    }],
+    "default_icon": {
+      "19": "icons/icon-19.png",
+      "38": "icons/icon-38.png" 
+    },
     "default_title": "Void",
     "default_popup": "popup.html"
-  }
+  },
+
+  "web_accessible_resources": [
+    "icons/icon-19.png",
+    "icons/icon-38.png",
+    "icons/void-32.png",
+    "icons/void-48.png"
+  ]
 
 }

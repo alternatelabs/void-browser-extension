@@ -5,43 +5,59 @@ import App from "./App";
 
 (function() {
   function setup() {
-    console.log("Void::Bookmarklet setup()");
+    console.log("Void::App setup()");
     var data = {
+      url: "https://pooreffort.com/",
       host: "pooreffort.com",
-      apiRoot: "http://void.dev/",
+      apiRoot: process.env.API_BASE_URL,
       token: "a0699293-f2f6-4616-935f-31744e63b45a"
     };
 
-    var div = document.createElement("div");
+    function loadApp() {
+      /* eslint-disable no-new */
+      new Vue({
+        el: "#app",
+        render: function(createElement) {
+          return createElement("App", {
+            props: {
+              siteData: data
+            },
+            on: {
+              close: this.close
+            }
+          });
+        },
 
-    document.body.appendChild(div);
+        components: { App },
 
-    var scriptTag = document.getElementById("void-app-bookmarklet-tag");
-
-    if (scriptTag) {
-      data.host = window.location.host || window.location.href;
-      data.apiRoot = scriptTag.dataset.apiRoot;
-      data.token = scriptTag.dataset.secureToken;
-    }
-
-    /* eslint-disable no-new */
-    new Vue({
-      data: { data },
-      template: '<App :site-data="data" @close="close" />',
-      components: { App },
-
-      methods: {
-        close() {
-          console.log("Void::Bookmarklet remove()");
-          this.$destroy();
-          document.body.removeChild(this.$el);
-
-          if (scriptTag) {
-            document.body.removeChild(scriptTag);
+        methods: {
+          close() {
+            console.log("Void::Bookmarklet remove()");
+            window.close();
           }
         }
-      }
-    }).$mount(div);
+      });
+    }
+
+    /*global browser*/
+    if (browser !== undefined && browser.tabs !== undefined) {
+      console.log("Fetching Tabs");
+      browser.tabs.query({
+        active: true,
+        currentWindow: true
+      }).then((arrayOfTabs) => {
+        const activeTab = arrayOfTabs[0];
+        const parser = document.createElement("a");
+        parser.href = activeTab.url;
+
+        data.host = parser.hostname;
+        data.url = activeTab.url;
+        data.pageTitle = activeTab.title;
+        loadApp();
+      });
+    } else {
+      loadApp();
+    }
   }
 
   if (document.body) {

@@ -1,5 +1,5 @@
 <template>
-  <div class="void-bookmarklet" :data-id="bookmark.id">
+  <div :class="containerClass">
     <span class="text"><strong>{{ host }}</strong> has been added to the void!</span>
     <tags-input :tags="tags" placeholder="Add tag (Press [TAB] to add)" @tags-change="tagsChange"></tags-input>
 
@@ -30,6 +30,13 @@ export default {
   components: { Loading, TagsInput },
 
   props: {
+    url: {
+      type: String,
+      required: false,
+      default() {
+        return window.location.href;
+      },
+    },
     host: {
       type: String,
       required: true,
@@ -41,6 +48,13 @@ export default {
     apiToken: {
       type: String,
       required: true,
+    },
+    containerClass: {
+      type: String,
+      required: false,
+      default() {
+        return "void-bookmarklet";
+      },
     },
   },
 
@@ -86,7 +100,8 @@ export default {
 
     findOrCreateBookmark() {
       this.savingState = "Creating bookmark&hellip;";
-      this.api().post("bookmarks", { url: window.location.href }).then(resp => {
+      this.api().post("bookmarks", { url: this.url }).then(resp => {
+        console.log("findOrCreateBookmark", resp.data);
         this.bookmark = resp.data.data;
         this.readLater = this.bookmark.read_later;
         this.tags = this.bookmark.tags.map(t => {
@@ -95,7 +110,11 @@ export default {
 
         setTimeout(() => {
           this.isLoading = false;
-          this.savingState = "Bookmark already exists!";
+          if (resp.status === 200) {
+            this.savingState = "Bookmark already exists!";
+          } else {
+            this.savingState = "Bookmark saved!";
+          }
         }, 100);
       }).catch(resp => {
         console.error("Error trying to find or create bookmark", resp);
@@ -141,21 +160,25 @@ $font-stack: -apple-system, BlinkMacSystemFont,
 
 .void-bookmarklet {
   font-family: $font-stack;
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  right: 20px;
   padding: 10px 20px;
   background: #fff;
-  box-shadow: 3px 3px 10px rgba(0,0,0,0.1);
-  border-radius: 6px;
-  @media screen and (min-width: 481px) {
-    top: 30px;
-    left: 30px;
-    max-width: 60%;
-    right: auto;
-  }
   color: #333;
+
+  &.-bookmarklet {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    box-shadow: 3px 3px 10px rgba(0,0,0,0.1);
+    border-radius: 6px;
+
+    @media screen and (min-width: 481px) {
+      top: 30px;
+      left: 30px;
+      max-width: 60%;
+      right: auto;
+    }
+  }
 
   .text {
     font-size: 16px;
