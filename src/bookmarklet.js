@@ -26,9 +26,18 @@ import BookmarkletApp from "./BookmarkletApp";
 
     /* eslint-disable no-new */
     new Vue({
-      data: { data },
-      template: '<BookmarkletApp :site-data="data" @close="close" />',
       components: { BookmarkletApp },
+
+      render: function(createElement) {
+        return createElement("BookmarkletApp", {
+          props: {
+            siteData: data
+          },
+          on: {
+            close: this.close
+          }
+        });
+      },
 
       methods: {
         close() {
