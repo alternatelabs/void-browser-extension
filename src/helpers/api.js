@@ -3,7 +3,7 @@ import axios from "axios";
 export default {
   instance(baseURL, token) {
     const instance = axios.create({
-      baseURL: baseURL + "api/v1/",
+      baseURL: baseURL + "v1/",
       timeout: 3000,
     });
 
