@@ -1,4 +1,4 @@
 module.exports = {
   NODE_ENV: '"production"',
-  API_BASE_URL: '"https://void-app.herokuapp.com/"',
+  API_BASE_URL: '"https://api.voidapp.co/"',
 }
