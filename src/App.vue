@@ -70,11 +70,26 @@ export default {
     },
   },
 
+  watch: {
+    token() {
+      this.toggleBodyClass();
+    },
+  },
+
   created() {
     this.token = localStorage.getItem("apiToken");
+    this.toggleBodyClass();
   },
 
   methods: {
+    toggleBodyClass() {
+      if (this.token) {
+        document.body.classList.remove("-signin");
+      } else {
+        document.body.classList.add("-signin");
+      }
+    },
+
     api() {
       return api.instance(this.siteData.apiRoot);
     },
