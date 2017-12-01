@@ -9,6 +9,7 @@ function resolve (dir) {
 
 module.exports = {
   entry: {
+    background: './src/background.js',
     app: './src/main.js',
     bookmarklet: './src/bookmarklet.js'
   },

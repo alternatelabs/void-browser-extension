@@ -14,8 +14,13 @@
   },
 
   "permissions": [
-    "activeTab"
+    "activeTab",
+    "contextMenus"
   ],
+
+  "background": {
+    "page": "background-page.html"
+  },
 
   "browser_action": {
     "default_icon": {
