@@ -1,6 +1,7 @@
 <template>
   <div :class="containerClass">
     <span class="text"><strong>{{ host }}</strong> has been added to the void!</span>
+    <span class="delete" @click="deleteBookmark"></span>
     <tags-input :tags="tags" placeholder="Add tag (Press [TAB] to add)" @tags-change="tagsChange"></tags-input>
 
     <div class="actions">
@@ -146,6 +147,22 @@ export default {
       });
     },
 
+    deleteBookmark() {
+      this.isLoading = true;
+      this.savingState = "Deleting&hellip;";
+
+      this.api().delete("bookmarks/" + this.bookmark.id).then(() => {
+        setTimeout(() => {
+          this.isLoading = false;
+          this.savingState = "Bookmark has been deleted!";
+        }, 100);
+
+        setTimeout(() => {
+          this.$emit("close");
+        }, 1000);
+      });
+    },
+
     done() {
       this.$emit("close");
     },
@@ -163,6 +180,7 @@ $font-stack: -apple-system, BlinkMacSystemFont,
   padding: 10px 20px;
   background: #fff;
   color: #333;
+  position: relative;
 
   &.-bookmarklet {
     position: fixed;
@@ -181,6 +199,7 @@ $font-stack: -apple-system, BlinkMacSystemFont,
   }
 
   .text {
+    display: block;
     font-size: 16px;
     @media screen and (min-width: 768px) {
       font-size: 19px;
@@ -188,6 +207,23 @@ $font-stack: -apple-system, BlinkMacSystemFont,
     font-weight: 300;
     line-height: 1.25;
     color: #444;
+    padding-right: 30px;
+  }
+
+  .delete {
+    position: absolute;
+    display: block;
+    cursor: pointer;
+    top: 10px;
+    right: 20px;
+    width: 30px;
+    height: 20px;
+    background: url("~assets/trash.svg") no-repeat center;
+    opacity: .4;
+
+    &:hover {
+      opacity: .6;
+    }
   }
 
   .tags-input {
