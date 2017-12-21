@@ -2,7 +2,7 @@
   <div :class="containerClass">
     <span class="text"><strong>{{ host }}</strong> has been added to the void!</span>
     <span class="delete" @click="deleteBookmark"></span>
-    <tags-input :tags="tags" placeholder="Add tag (Press [TAB] to add)" @tags-change="tagsChange"></tags-input>
+    <input-tag :on-change="tagsChange" :tags="tags" placeholder="Add tags"></input-tag>
 
     <div class="actions">
       <label class="read-it-later" for="bookmark_read_later" @click.prevent="toggleReadLater">
@@ -20,15 +20,14 @@
 </template>
 
 <script>
-import _ from "lodash";
 import api from "helpers/api";
-import TagsInput from "vue-tagsinput";
+import InputTag from "vue-input-tag";
 import Loading from "components/Loading";
 
 export default {
   name: "bookmarklet",
 
-  components: { Loading, TagsInput },
+  components: { Loading, InputTag },
 
   props: {
     url: {
@@ -83,15 +82,8 @@ export default {
       this.updateBookmark();
     },
 
-    tagsChange(index, value) {
-      if (_.isString(value) && value.length) {
-        // new tag added
-        this.tags.splice(index, 0, { text: "#" + this.cleanTag(value) });
-      } else {
-        // tag removed
-        this.tags = _.without(this.tags, this.tags[index]);
-      }
-
+    tagsChange(newTags) {
+      this.tags = newTags.map(t => `#${this.cleanTag(t)}`);
       this.updateBookmark();
     },
 
@@ -105,9 +97,7 @@ export default {
         console.log("findOrCreateBookmark", resp.data);
         this.bookmark = resp.data.data;
         this.readLater = this.bookmark.read_later;
-        this.tags = this.bookmark.tags.map(t => {
-          return { text: "#" + t };
-        });
+        this.tags = this.bookmark.tags.map(t => `#${t}`);
 
         setTimeout(() => {
           this.isLoading = false;
@@ -123,8 +113,7 @@ export default {
     },
 
     updateBookmark() {
-      // const tagNames = this.tags.map(t => this.cleanTag(t.text)).join(",");
-      const tags = this.tags.map(t => this.cleanTag(t.text));
+      const tags = this.tags.map(t => this.cleanTag(t));
 
       const params = {
         tags,
@@ -170,7 +159,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 $font-stack: -apple-system, BlinkMacSystemFont,
   "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
   "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
@@ -226,12 +215,36 @@ $font-stack: -apple-system, BlinkMacSystemFont,
     }
   }
 
-  .tags-input {
+  .vue-input-tag-wrapper {
+    padding: 4px 8px !important;
     margin-top: 10px;
-    outline: none;
-    box-shadow: none;
-    border: solid 1px #d7d7d7;
     border-radius: 4px;
+    border: solid 1px #d7d7d7 !important;
+
+    > .input-tag {
+      white-space: nowrap !important;
+      color: #333 !important;
+      border: 0 !important;
+      margin-top: 3px !important;
+      margin-bottom: 3px !important;
+      font-family: $font-stack;
+      padding: 5px !important;
+      border-radius: 2px !important;
+      background-color: #efefef !important;
+      font-size: 12px !important;
+      line-height: 1;
+    }
+
+    > .new-tag {
+      font-family: $font-stack;
+      font-size: 12px !important;
+      line-height: normal !important;
+      margin-bottom: 0 !important;
+
+      &:focus {
+        margin-left: 5px;
+      }
+    }
   }
 
   .status-box {

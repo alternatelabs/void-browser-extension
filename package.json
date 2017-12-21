@@ -13,9 +13,8 @@
   },
   "dependencies": {
     "axios": "^0.15.3",
-    "lodash": "^4.17.4",
     "vue": "^2.1.10",
-    "vue-tagsinput": "^2.0.1"
+    "vue-input-tag": "0.0.16"
   },
   "devDependencies": {
     "autoprefixer": "^6.7.2",
