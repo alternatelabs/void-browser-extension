@@ -88,7 +88,7 @@ export default {
     },
 
     cleanTag(tag) {
-      return tag.toLowerCase().replace(/[^a-z0-9\-\_]/, "");
+      return tag.toLowerCase().replace(/[^a-z0-9\-\_]/g, "");
     },
 
     findOrCreateBookmark() {
