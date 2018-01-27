@@ -1,7 +1,7 @@
 <template>
   <div :class="containerClass">
-    <span class="text"><strong>{{ host }}</strong> has been added to the void!</span>
-    <span class="delete" @click="deleteBookmark"></span>
+    <span class="text">Added to the void</span>
+    <span class="delete" @click="deleteBookmark">Remove this page</span>
     <input-tag :on-change="tagsChange" :tags="tags" placeholder="Add tags"></input-tag>
 
     <div class="actions">
@@ -9,12 +9,12 @@
         <input type="checkbox" v-model="readLater" id="bookmark_read_later" name="bookmark_read_later" @click.prevent="toggleReadLater">
         Read later
       </label>
-      <span class="ui-button" @click="done">Done!</span>
+      <span class="ui-button" @click="done">Save</span>
     </div>
 
     <div class="status-box">
       <loading :is-loading="isLoading" />
-      <span class="saving-state" v-show="savingState" v-html="savingState"></span>
+      <span class="saving-state" v-text="host"></span>
     </div>
   </div>
 </template>
@@ -64,7 +64,6 @@ export default {
       bookmark: {},
       tags: [],
       isLoading: true,
-      savingState: ""
     };
   },
 
@@ -92,7 +91,6 @@ export default {
     },
 
     findOrCreateBookmark() {
-      this.savingState = "Creating bookmark&hellip;";
       this.api().post("bookmarks", { url: this.url }).then(resp => {
         console.log("findOrCreateBookmark", resp.data);
         this.bookmark = resp.data.data;
@@ -101,11 +99,6 @@ export default {
 
         setTimeout(() => {
           this.isLoading = false;
-          if (resp.status === 200) {
-            this.savingState = "Bookmark already exists!";
-          } else {
-            this.savingState = "Bookmark saved!";
-          }
         }, 100);
       }).catch(resp => {
         console.error("Error trying to find or create bookmark", resp);
@@ -121,7 +114,6 @@ export default {
       };
 
       this.isLoading = true;
-      this.savingState = "Saving changes&hellip;";
 
       this.api().put("bookmarks/" + this.bookmark.id, params).then(resp => {
         this.bookmark = resp.data.data;
@@ -129,7 +121,6 @@ export default {
 
         setTimeout(() => {
           this.isLoading = false;
-          this.savingState = "Changes saved!";
         }, 100);
       }).catch(resp => {
         console.error("Error updating bookmark", resp);
@@ -138,12 +129,10 @@ export default {
 
     deleteBookmark() {
       this.isLoading = true;
-      this.savingState = "Deleting&hellip;";
 
       this.api().delete("bookmarks/" + this.bookmark.id).then(() => {
         setTimeout(() => {
           this.isLoading = false;
-          this.savingState = "Bookmark has been deleted!";
         }, 100);
 
         setTimeout(() => {
@@ -189,14 +178,13 @@ $font-stack: -apple-system, BlinkMacSystemFont,
 
   .text {
     display: block;
-    font-size: 16px;
-    @media screen and (min-width: 768px) {
-      font-size: 19px;
-    }
-    font-weight: 300;
+    font-size: 14px;
+    text-transform: uppercase;
+    font-weight: bold;
     line-height: 1.25;
-    color: #444;
+    color: #2F2F2F;
     padding-right: 30px;
+    margin: 5px 0;
   }
 
   .delete {
@@ -205,14 +193,10 @@ $font-stack: -apple-system, BlinkMacSystemFont,
     cursor: pointer;
     top: 10px;
     right: 20px;
-    width: 30px;
-    height: 20px;
-    background: url("~assets/trash.svg") no-repeat center;
-    opacity: .4;
-
-    &:hover {
-      opacity: .6;
-    }
+    line-height: 26px;
+    font-size: 13px;
+    color: #2F2F2F;
+    text-decoration: underline;
   }
 
   .vue-input-tag-wrapper {
@@ -229,21 +213,26 @@ $font-stack: -apple-system, BlinkMacSystemFont,
       margin-bottom: 3px !important;
       font-family: $font-stack;
       padding: 5px !important;
-      border-radius: 2px !important;
-      background-color: #efefef !important;
-      font-size: 12px !important;
+      border-radius: 4px !important;
+      background-color: #E9E9EA !important;
+      font-size: 15px !important;
       line-height: 1;
 
       .remove {
         color: #333 !important;
+        &:before {
+          content: "×" !important;
+        }
       }
     }
 
     > .new-tag {
       font-family: $font-stack;
-      font-size: 12px !important;
+      font-size: 15px !important;
       line-height: normal !important;
       margin-bottom: 0 !important;
+      margin-top: 3px !important;
+      margin-bottom: 3px !important;
 
       &:focus {
         margin-left: 5px;

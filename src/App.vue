@@ -6,7 +6,7 @@
 
     <div class="container -auth" v-else>
       <div class="padded-box">
-        <img src="~assets/logo-dark@2x.png" width="73" height="20">
+        <img src="~assets/logo-dark.svg" width="69" height="20">
       </div>
 
       <div class="flash error" v-if="passwordError">Bad email or password.</div>
@@ -30,8 +30,8 @@
           </div>
 
           <ul class="other-links">
-            <li><a :href="siteData.apiRoot+'/sign_up'">Sign Up</a></li>
-            <li><a :href="siteData.apiRoot+'/passwords/new'">Forgot Password</a></li>
+            <li><a href="https://voidapp.co/sign_up" target="_blank">Sign Up</a></li>
+            <li><a href="https://voidapp.co/passwords/new" target="_blank">Forgot Password</a></li>
           </ul>
         </form>
       </div>
