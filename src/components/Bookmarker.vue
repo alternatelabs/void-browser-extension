@@ -167,6 +167,7 @@ $font-stack: -apple-system, BlinkMacSystemFont,
     right: 20px;
     box-shadow: 3px 3px 10px rgba(0,0,0,0.1);
     border-radius: 6px;
+    width: 480px;
 
     @media screen and (min-width: 481px) {
       top: 30px;
