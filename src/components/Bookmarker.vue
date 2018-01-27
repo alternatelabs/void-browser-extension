@@ -233,6 +233,10 @@ $font-stack: -apple-system, BlinkMacSystemFont,
       background-color: #efefef !important;
       font-size: 12px !important;
       line-height: 1;
+
+      .remove {
+        color: #333 !important;
+      }
     }
 
     > .new-tag {
