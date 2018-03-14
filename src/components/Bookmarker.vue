@@ -23,6 +23,9 @@
 import api from "helpers/api";
 import InputTag from "vue-input-tag";
 import Loading from "components/Loading";
+import ReconnectingWebSocket from "reconnectingwebsocket";
+
+let ws;
 
 export default {
   name: "bookmarklet",
@@ -68,6 +71,7 @@ export default {
   },
 
   created() {
+    // #TODO: this.connectWS();
     this.findOrCreateBookmark();
   },
 
@@ -144,7 +148,74 @@ export default {
     done() {
       this.$emit("close");
     },
-  }
+
+    disconnectWS() {
+      if (ws && ws.readyState <= 1) {
+        ws.close();
+      }
+
+      ws = null;
+    },
+
+    connectWS() {
+      if (ws && ws.readyState <= 1) {
+        console.log("WS connection already established");
+        return;
+      }
+      ws = new ReconnectingWebSocket(process.env.REALTIME_SERVICE_WSS);
+      let pingInterval;
+
+      ws.onopen = () => {
+        this.api().get("user/realtime_token")
+          .then((resp) => {
+            const msg = {
+              event: "authenticate",
+              data: resp.data.token,
+            };
+            ws.send(JSON.stringify(msg));
+
+            console.log("WS Connected");
+          })
+          .catch(err => console.error("Error fetching realtime token", err.response));
+
+        pingInterval = setInterval(() => {
+          ws.send(JSON.stringify({ event: "ping" }));
+        }, 10000);
+      };
+
+      ws.onmessage = (event) => {
+        const msg = JSON.parse(event.data);
+
+        switch (msg.event) {
+          case "subscribed": {
+            const channelName = JSON.parse(msg.data).channel;
+            console.log(`Subscribed to channel ${channelName}`);
+            break;
+          }
+          case "pong": {
+            // console.log("Realtime pong");
+            break;
+          }
+          default: {
+            const evenData = JSON.parse(msg.data);
+            console.log(`Realtime: ${msg.event}`, evenData);
+            if (msg.event === "bookmark_updated") {
+              // store.commit("upsertBookmark", evenData.data);
+              console.log("upsertBookmark", evenData.data);
+            }
+            // if (msg.event === "bookmark_deleted") {
+            //   store.commit("removeBookmark", evenData.data.id);
+            // }
+          }
+        }
+      };
+
+      ws.onclose = (event) => {
+        console.error("WS Closed", event);
+        clearInterval(pingInterval);
+      };
+    },
+  },
 };
 </script>
 
