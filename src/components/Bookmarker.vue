@@ -101,6 +101,12 @@ export default {
         this.readLater = this.bookmark.read_later;
         this.tags = this.bookmark.tags.map(t => `#${t}`);
 
+        if (resp.status === 202) {
+          this.$ga.event("bookmark", "added", "Added bookmark from browser extension", 1);
+        } else {
+          this.$ga.event("bookmark", "readded", "Re-added bookmark from browser extension", 1);
+        }
+
         setTimeout(() => {
           this.isLoading = false;
         }, 100);
@@ -123,6 +129,8 @@ export default {
         this.bookmark = resp.data.data;
         this.readLater = this.bookmark.read_later;
 
+        this.$ga.event("bookmark", "updated", "Updated bookmark in browser extension", 2);
+
         setTimeout(() => {
           this.isLoading = false;
         }, 100);
@@ -142,6 +150,8 @@ export default {
         setTimeout(() => {
           this.$emit("close");
         }, 1000);
+
+        this.$ga.event("bookmark", "removed", "Removed bookmark in browser extension", 2);
       });
     },
 

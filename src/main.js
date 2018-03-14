@@ -1,7 +1,12 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from "vue";
+import VueAnalytics from "vue-analytics";
 import App from "./App";
+
+Vue.use(VueAnalytics, {
+  id: "UA-8135554-9",
+});
 
 (function() {
   console.log("Void::App setup()");
