@@ -104,7 +104,7 @@ export default {
 
       this.feedPresent = true;
 
-      this.api().get(`v1/feeds/${metadata.feed_id}`)
+      this.api().get(`feeds/${metadata.feed_id}`)
         .then(() => {
           this.isSubscribed = true;
         })
