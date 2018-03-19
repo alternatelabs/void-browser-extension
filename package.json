@@ -14,6 +14,7 @@
   "dependencies": {
     "axios": "^0.15.3",
     "reconnectingwebsocket": "^1.0.0",
+    "v-tooltip": "^2.0.0-rc.31",
     "vue": "^2.1.10",
     "vue-analytics": "^5.1.1",
     "vue-input-tag": "0.0.16"

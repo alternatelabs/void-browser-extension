@@ -2,8 +2,10 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from "vue";
 import VueAnalytics from "vue-analytics";
+import VTooltip from "v-tooltip";
 import App from "./App";
 
+Vue.use(VTooltip);
 Vue.use(VueAnalytics, {
   id: "UA-8135554-9",
 });
