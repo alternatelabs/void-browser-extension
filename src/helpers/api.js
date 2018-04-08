@@ -5,10 +5,11 @@ export default {
     const instance = axios.create({
       baseURL: baseURL + "v1/",
       timeout: 3000,
+      withCredentials: token === "useCredentials",
     });
 
     // API Authentication
-    if (token) {
+    if (token && token !== "useCredentials") {
       instance.defaults.headers.common.Authorization = "Token " + token;
     }
 

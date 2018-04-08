@@ -1,6 +1,6 @@
 <template>
   <div id="app" @click="close">
-    <bookmarker :host="siteData.host" :api-root="siteData.apiRoot" :api-token="siteData.token" container-class="void-bookmarklet -bookmarklet" @close="close" @click.native.stop.prevent />
+    <bookmarker :host="siteData.host" :api-root="siteData.apiRoot" :api-token="siteData.token" container-class="void-bookmarklet -bookmarklet" @close="close" @unauthorized="unauthorized" @click.native.stop.prevent />
   </div>
 </template>
 
@@ -27,7 +27,14 @@ export default {
   methods: {
     close() {
       this.$emit("close");
-    }
+    },
+
+    unauthorized() {
+      /*global alert*/
+      /*eslint-disable no-alert*/
+      alert("Problem saving bookmark, please sign in to void");
+      /*eslint-enable no-alert*/
+    },
   }
 };
 </script>

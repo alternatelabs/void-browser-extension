@@ -160,8 +160,11 @@ export default {
         setTimeout(() => {
           this.isLoading = false;
         }, 100);
-      }).catch(resp => {
-        console.error("Error trying to find or create bookmark", resp);
+      }).catch(err => {
+        console.error("Error trying to find or create bookmark", err);
+        if (err.response && err.response.status === 401) {
+          this.$emit("unauthorized", err);
+        }
       });
     },
 

@@ -1,7 +1,14 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from "vue";
+import VueAnalytics from "vue-analytics";
+import VTooltip from "v-tooltip";
 import BookmarkletApp from "./BookmarkletApp";
+
+Vue.use(VTooltip);
+Vue.use(VueAnalytics, {
+  id: "UA-8135554-9",
+});
 
 (function() {
   function setup() {
@@ -21,7 +28,7 @@ import BookmarkletApp from "./BookmarkletApp";
     if (scriptTag) {
       data.host = window.location.host || window.location.href;
       data.apiRoot = scriptTag.dataset.apiRoot;
-      data.token = scriptTag.dataset.secureToken;
+      data.token = "useCredentials";
     }
 
     /* eslint-disable no-new */

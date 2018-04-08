@@ -16,7 +16,6 @@ Vue.use(VueAnalytics, {
     url: "https://pooreffort.com/",
     host: "pooreffort.com",
     apiRoot: process.env.API_BASE_URL,
-    token: "a0699293-f2f6-4616-935f-31744e63b45a"
   };
 
   function loadApp() {
