@@ -4,6 +4,8 @@
 
 ## Creating a release
 
+0. Increment version in `static/manifest.json`
+
 1. Create a fresh build
 
   ```bash
