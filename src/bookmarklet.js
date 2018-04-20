@@ -16,7 +16,7 @@ Vue.use(VueAnalytics, {
     var data = {
       host: "pooreffort.com",
       apiRoot: "http://void.dev/",
-      token: "a0699293-f2f6-4616-935f-31744e63b45a"
+      token: "useCredentials"
     };
 
     var div = document.createElement("div");
@@ -28,7 +28,6 @@ Vue.use(VueAnalytics, {
     if (scriptTag) {
       data.host = window.location.host || window.location.href;
       data.apiRoot = scriptTag.dataset.apiRoot;
-      data.token = "useCredentials";
     }
 
     /* eslint-disable no-new */
