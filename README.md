@@ -2,9 +2,35 @@
 
 > Bookmarklet for void-app
 
+## Creating a release
+
+1. Create a fresh build
+
+  ```bash
+  $ npm run build
+  ```
+
+2. Go into the dist/static/ dir
+
+  ```bash
+  $ cd dist/static/
+  ```
+
+3. Use archiver to zip up all the files in static
+
+4. Upload this zip to Chome developers store
+
+5. Upload to mozilla add ons - also zip up the code and upload separately
+
+6. Run a deploy for the safari bookmarklet
+
+  ```bash
+  $ ./deploy production
+  ```
+
 ## Build Setup
 
-``` bash
+```bash
 # install dependencies
 npm install
 
