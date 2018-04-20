@@ -1,6 +1,6 @@
-# void-bookmarklet
+# Void browser extension
 
-> Bookmarklet for void-app
+> Browser extension and bookmarklet app for [Void](https://voidapp.co)
 
 ## Creating a release
 
@@ -44,12 +44,16 @@ npm run build
 
 # build for production and view the bundle analyzer report
 npm run build --report
-
-# run unit tests
-npm run unit
-
-# run all tests
-npm test
 ```
 
-For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+## Built With
+
+* [Vue](https://vuejs.org/)
+
+## Versioning
+
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags).
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
