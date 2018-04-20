@@ -22,7 +22,11 @@
 
 4. Upload this zip to Chome developers store
 
-5. Upload to mozilla add ons - also zip up the code and upload separately
+5. Upload to mozilla add ons
+
+    ```
+    Put link to https://github.com/alternatelabs/void-browser-extension in **Notes for Reviewer**
+    ```
 
 6. Run a deploy for the safari bookmarklet
 
