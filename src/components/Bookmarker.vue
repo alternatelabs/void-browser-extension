@@ -226,7 +226,6 @@ export default {
         return;
       }
       ws = new ReconnectingWebSocket(process.env.REALTIME_SERVICE_WSS);
-      let pingInterval;
 
       ws.onopen = () => {
         this.api().get("user/realtime_token")
@@ -240,10 +239,6 @@ export default {
             console.log("WS Connected");
           })
           .catch(err => console.error("Error fetching realtime token", err.response));
-
-        pingInterval = setInterval(() => {
-          ws.send(JSON.stringify({ event: "ping" }));
-        }, 10000);
       };
 
       ws.onmessage = (event) => {
@@ -255,28 +250,19 @@ export default {
             console.log(`Subscribed to channel ${channelName}`);
             break;
           }
-          case "pong": {
-            // console.log("Realtime pong");
-            break;
-          }
           default: {
             const evenData = JSON.parse(msg.data);
             console.log(`Realtime: ${msg.event}`, evenData);
             if (msg.event === "bookmark_updated") {
-              // store.commit("upsertBookmark", evenData.data);
               console.log("upsertBookmark", evenData.data);
               this.bookmark = evenData.data;
             }
-            // if (msg.event === "bookmark_deleted") {
-            //   store.commit("removeBookmark", evenData.data.id);
-            // }
           }
         }
       };
 
       ws.onclose = (event) => {
         console.error("WS Closed", event);
-        clearInterval(pingInterval);
       };
     },
   },
