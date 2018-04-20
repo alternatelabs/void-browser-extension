@@ -3,7 +3,7 @@ import axios from "axios";
 export default {
   instance(baseURL, token) {
     const instance = axios.create({
-      baseURL: baseURL + "v1/",
+      baseURL: baseURL + "api/v1/",
       timeout: 3000,
       withCredentials: token === "useCredentials",
     });
