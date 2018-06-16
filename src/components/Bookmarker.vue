@@ -72,7 +72,6 @@ export default {
 
   data() {
     return {
-      readLater: false,
       bookmark: {},
       tags: [],
       isLoading: true,
@@ -86,6 +85,9 @@ export default {
       if (!this.feedPresent) return "No feed detected";
       if (!this.isSubscribed) return "Subscribe to feed";
       return "Unsubscribe from feed";
+    },
+    readLater() {
+      return this.tags.indexOf("#reading-list") > -1;
     },
   },
 
@@ -130,7 +132,12 @@ export default {
     },
 
     toggleReadLater() {
-      this.readLater = !this.readLater;
+      if (this.readLater) {
+        const index = this.tags.indexOf("#reading-list");
+        this.tags.splice(index, 1);
+      } else {
+        this.tags.push("#reading-list");
+      }
       this.updateBookmark();
     },
 
@@ -147,7 +154,6 @@ export default {
       this.api().post("bookmarks", { url: this.url }).then(resp => {
         console.log("findOrCreateBookmark", resp.data);
         this.bookmark = resp.data.data;
-        this.readLater = this.bookmark.read_later;
         this.tags = this.bookmark.tags.map(t => `#${t}`);
         this.checkFeedStatus(this.bookmark.metadata);
 
@@ -180,7 +186,7 @@ export default {
 
       this.api().put("bookmarks/" + this.bookmark.id, params).then(resp => {
         this.bookmark = resp.data.data;
-        this.readLater = this.bookmark.read_later;
+        this.tags = this.bookmark.tags.map(t => `#${t}`);
 
         this.$ga.event("bookmark", "updated", "Updated bookmark in browser extension", 2);
 

@@ -4,7 +4,7 @@ export default {
   instance(baseURL, token) {
     const instance = axios.create({
       baseURL: baseURL + "api/v1/",
-      timeout: 3000,
+      timeout: 10000,
       withCredentials: token === "useCredentials",
     });
 

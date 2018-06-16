@@ -30,8 +30,8 @@
           </div>
 
           <ul class="other-links">
-            <li><a href="https://voidapp.co/sign_up" target="_blank">Sign Up</a></li>
-            <li><a href="https://voidapp.co/passwords/new" target="_blank">Forgot Password</a></li>
+            <li v-if="false"><a href="https://voidapp.co/signups/new" target="_blank">Sign Up</a></li>
+            <li><a href="https://voidapp.co/password_resets/new" target="_blank">Forgot Password</a></li>
           </ul>
         </form>
       </div>
