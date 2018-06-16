@@ -178,8 +178,7 @@ export default {
       const tags = this.tags.map(t => this.cleanTag(t));
 
       const params = {
-        tags,
-        read_later: this.readLater
+        tags
       };
 
       this.isLoading = true;
