@@ -19,6 +19,8 @@
           </g>
         </svg>
       </div>
+      <img v-if="bookmark.public" :src="lockOpen" v-tooltip.left="'Public - visible to others'" class="visibility -public" @click="toggleVisibility" />
+      <img v-else :src="lockClosed" v-tooltip.left="'Private - only you can see this'" class="visibility" @click="toggleVisibility" />
       <label class="read-it-later" for="bookmark_read_later" @click.prevent="toggleReadLater">
         <input type="checkbox" v-model="readLater" id="bookmark_read_later" name="bookmark_read_later" @click.prevent="toggleReadLater">
         Read later
@@ -33,6 +35,8 @@ import api from "helpers/api";
 import InputTag from "vue-input-tag";
 import Loading from "components/Loading";
 import ReconnectingWebSocket from "reconnectingwebsocket";
+import lockClosed from "assets/icon-lock-closed.svg";
+import lockOpen from "assets/icon-lock-open.svg";
 
 let ws;
 
@@ -77,6 +81,8 @@ export default {
       isLoading: true,
       feedPresent: false,
       isSubscribed: false,
+      lockClosed,
+      lockOpen,
     };
   },
 
@@ -141,6 +147,11 @@ export default {
       this.updateBookmark();
     },
 
+    toggleVisibility() {
+      this.bookmark.public = !this.bookmark.public;
+      this.updateBookmark();
+    },
+
     tagsChange(newTags) {
       this.tags = newTags.map(t => `#${this.cleanTag(t)}`);
       this.updateBookmark();
@@ -178,7 +189,8 @@ export default {
       const tags = this.tags.map(t => this.cleanTag(t));
 
       const params = {
-        tags
+        tags,
+        public: this.bookmark.public,
       };
 
       this.isLoading = true;
@@ -388,6 +400,15 @@ $font-stack: -apple-system, BlinkMacSystemFont,
     &.-disabled {
       cursor: default;
       #feed-icon { fill: #d7d7d7; }
+    }
+  }
+
+  .visibility {
+    margin-right: 10px;
+    cursor: pointer;
+
+    &.-public {
+      opacity: .2;
     }
   }
 
