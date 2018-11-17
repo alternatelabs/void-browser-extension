@@ -1,25 +1,18 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import Bookmarker from "./components/Bookmarker"
 
 class App extends Component {
   render() {
+    const apiRoot = ""
+    const apiToken = ""
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.tsx</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+      <div className="void-ext">
+        <Bookmarker
+          url={window.location.href}
+          host={window.location.host}
+          apiRoot={apiRoot}
+          apiToken={apiToken}
+        />
       </div>
     );
   }
