@@ -3,11 +3,15 @@ import Loading from "./Loading"
 import lockOpen from "../assets/icon-lock-open.svg"
 import lockClosed from "../assets/icon-lock-closed.svg"
 import ReactTags, { Tag } from "react-tag-autocomplete"
+import api from "../helpers/api"
 import "./Bookmarker.scss"
 import "./ReactTags.css"
+import { AxiosInstance } from "axios";
 
 interface IBookmark {
   public: boolean;
+  tags: string[];
+  metadata: object;
 }
 
 interface IBookmarkerProps {
@@ -33,8 +37,8 @@ function cleanTagName(tag: string) {
 
 export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerState> {
   state = {
-    isLoading: false,
-    bookmark: { public: false },
+    isLoading: true,
+    bookmark: { public: false, tags: [], metadata: {} },
     tags: [],
     suggestions: [
       { id: 1, name: "ruby"  },
@@ -42,6 +46,10 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
     ],
     feedPresent: false,
     isSubscribed: false,
+  }
+
+  componentDidMount() {
+    this.findOrCreateBookmark()
   }
 
   render() {
@@ -62,9 +70,7 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
         />
 
         <div className="actions">
-          { isLoading &&
-            <Loading isLoading={isLoading} />
-          }
+          <Loading isLoading={isLoading} />
           <div className="saving-state">{host}</div>
           <div className="rssfeed">
             <svg onClick={this.toggleFeedSubscription} width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
@@ -111,31 +117,42 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
   toggleReadLater = () => {}
 
   done = () => {}
-/*
+
+  readLater = () => {
+    // return this.state.tags.map(t => t.name).indexOf("#reading-list") > -1;
+    return false
+  }
+
+  api = (): AxiosInstance => {
+    return api.instance(this.props.apiRoot, this.props.apiToken)
+  }
+
   findOrCreateBookmark = () => {
-    this.api().post("bookmarks", { url: this.url }).then(resp => {
+    const { url } = this.props
+    this.api().post("bookmarks", { url: url }).then(resp => {
       console.log("findOrCreateBookmark", resp.data);
-      this.bookmark = resp.data.data;
-      this.tags = this.bookmark.tags.map(t => `#${t}`);
-      this.checkFeedStatus(this.bookmark.metadata);
+      const bookmark = resp.data.data as IBookmark
+      const tags = bookmark.tags.map(t => ({ id: t, name: `#${t}` }));
+      this.setState({ bookmark, tags })
+      // this.checkFeedStatus(bookmark.metadata);
 
       if (resp.status === 202) {
-        this.$ga.event("bookmark", "added", "Added bookmark from browser extension", 1);
+        // this.$ga.event("bookmark", "added", "Added bookmark from browser extension", 1);
       } else {
-        this.$ga.event("bookmark", "readded", "Re-added bookmark from browser extension", 1);
+        // this.$ga.event("bookmark", "readded", "Re-added bookmark from browser extension", 1);
       }
 
       setTimeout(() => {
-        this.isLoading = false;
+        this.setState({ isLoading: false })
       }, 100);
     }).catch(err => {
-      console.error("Error trying to find or create bookmark", err);
+      console.error("Error trying to find or create bookmark", err.response || err);
       if (err.response && err.response.status === 401) {
-        this.$emit("unauthorized", err);
+        // this.$emit("unauthorized", err);
       }
     });
   }
-
+/*
   updateBookmark = () => {
     const tags = this.tags.map(t => this.cleanTag(t));
 
