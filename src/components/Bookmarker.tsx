@@ -3,6 +3,7 @@ import Loading from "./Loading"
 import lockOpen from "../assets/icon-lock-open.svg"
 import lockClosed from "../assets/icon-lock-closed.svg"
 import ReactTags, { Tag } from "react-tag-autocomplete"
+import ReconnectingWebSocket from "reconnectingwebsocket"
 import api from "../helpers/api"
 import "./Bookmarker.scss"
 import "./ReactTags.css"
@@ -30,6 +31,8 @@ interface IBookmarkerState {
   feedPresent: boolean;
   isSubscribed: boolean;
 }
+
+let ws: ReconnectingWebSocket | null;
 
 function cleanTagName(tag: string) {
   return tag.toLowerCase().replace(/[^a-z0-9\-\_]/g, "")
@@ -192,7 +195,7 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
       this.$ga.event("bookmark", "removed", "Removed bookmark in browser extension", 2);
     });
   }
-
+*/
   disconnectWS = () => {
     if (ws && ws.readyState <= 1) {
       ws.close();
@@ -206,7 +209,7 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
       console.log("WS connection already established");
       return;
     }
-    ws = new ReconnectingWebSocket(process.env.REALTIME_SERVICE_WSS);
+    ws = new ReconnectingWebSocket(process.env.REACT_APP_REALTIME_SERVICE_WSS as string);
 
     ws.onopen = () => {
       this.api().get("user/realtime_token")
@@ -215,28 +218,28 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
             event: "authenticate",
             data: resp.data.token,
           };
-          ws.send(JSON.stringify(msg));
-
+          ws && ws.send(JSON.stringify(msg));
           console.log("WS Connected");
         })
         .catch(err => console.error("Error fetching realtime token", err.response));
     };
 
     ws.onmessage = (event) => {
-      const msg = JSON.parse(event.data);
+      const msg = JSON.parse(event.data)
 
       switch (msg.event) {
         case "subscribed": {
-          const channelName = JSON.parse(msg.data).channel;
-          console.log(`Subscribed to channel ${channelName}`);
-          break;
+          const channelName = JSON.parse(msg.data).channel
+          console.log(`Subscribed to channel ${channelName}`)
+          break
         }
         default: {
-          const evenData = JSON.parse(msg.data);
-          console.log(`Realtime: ${msg.event}`, evenData);
+          const evenData = JSON.parse(msg.data)
+          console.log(`Realtime: ${msg.event}`, evenData)
           if (msg.event === "bookmark_updated") {
-            console.log("upsertBookmark", evenData.data);
-            this.bookmark = evenData.data;
+            console.log("upsertBookmark", evenData.data)
+            const bookmark = evenData.data
+            this.setState({ bookmark })
           }
         }
       }
@@ -244,7 +247,6 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
 
     ws.onclose = (event) => {
       console.error("WS Closed", event);
-    };
+    }
   }
-*/
 }

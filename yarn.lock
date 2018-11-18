@@ -783,6 +783,10 @@
     "@types/prop-types" "*"
     csstype "^2.2.0"
 
+"@types/reconnectingwebsocket@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@types/reconnectingwebsocket/-/reconnectingwebsocket-1.0.1.tgz#56c6f19136ba265c16e7b2dc1bfbb97960a869d5"
+
 "@types/styled-components@^4.1.0":
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/@types/styled-components/-/styled-components-4.1.0.tgz#87d193ccfd4768c3b7606404646f3564c18830d0"
@@ -7175,6 +7179,10 @@ realpath-native@^1.0.0:
   resolved "https://registry.yarnpkg.com/realpath-native/-/realpath-native-1.0.2.tgz#cd51ce089b513b45cf9b1516c82989b51ccc6560"
   dependencies:
     util.promisify "^1.0.0"
+
+reconnectingwebsocket@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/reconnectingwebsocket/-/reconnectingwebsocket-1.0.0.tgz#0b825babb37b670445c65aa7d3ed978300205444"
 
 recursive-readdir@2.2.2:
   version "2.2.2"
