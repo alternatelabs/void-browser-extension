@@ -1,7 +1,13 @@
 import React, { Component } from 'react';
 import Bookmarker from "./components/Bookmarker"
 
-class App extends Component {
+interface IAppProps {
+  url: string;
+  host: string;
+  apiRoot: string;
+}
+
+class App extends Component<IAppProps, {}> {
   render() {
     const apiRoot = ""
     const apiToken = ""

@@ -1,15 +1,41 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
-  "icons": [
-    {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
-    }
+
+  "description": "Bookmark web pages to Void",
+  "manifest_version": 2,
+  "name": "Void",
+  "version": "0.13",
+  "homepage_url": "https://voidapp.co",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "19": "icons/icon-19.png",
+    "38": "icons/icon-38.png",
+    "32": "icons/void-32.png",
+    "48": "icons/void-48.png"
+  },
+
+  "permissions": [
+    "activeTab",
+    "contextMenus"
   ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+
+  "background": {
+    "page": "background-page.html"
+  },
+
+  "browser_action": {
+    "default_icon": {
+      "19": "icons/icon-19.png",
+      "38": "icons/icon-38.png"
+    },
+    "default_title": "Void",
+    "default_popup": "index.html"
+  },
+
+  "web_accessible_resources": [
+    "icons/icon-19.png",
+    "icons/icon-38.png",
+    "icons/void-32.png",
+    "icons/void-48.png"
+  ]
+
 }

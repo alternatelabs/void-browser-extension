@@ -17,11 +17,12 @@
     "react-tag-autocomplete": "^5.7.1",
     "styled-components": "^4.1.1",
     "styled-system": "^3.1.11",
-    "typescript": "3.1.6"
+    "typescript": "3.1.6",
+    "webextension-polyfill-ts": "^0.8.9"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "INLINE_RUNTIME_CHUNK=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },

@@ -111,4 +111,123 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
   toggleReadLater = () => {}
 
   done = () => {}
+/*
+  findOrCreateBookmark = () => {
+    this.api().post("bookmarks", { url: this.url }).then(resp => {
+      console.log("findOrCreateBookmark", resp.data);
+      this.bookmark = resp.data.data;
+      this.tags = this.bookmark.tags.map(t => `#${t}`);
+      this.checkFeedStatus(this.bookmark.metadata);
+
+      if (resp.status === 202) {
+        this.$ga.event("bookmark", "added", "Added bookmark from browser extension", 1);
+      } else {
+        this.$ga.event("bookmark", "readded", "Re-added bookmark from browser extension", 1);
+      }
+
+      setTimeout(() => {
+        this.isLoading = false;
+      }, 100);
+    }).catch(err => {
+      console.error("Error trying to find or create bookmark", err);
+      if (err.response && err.response.status === 401) {
+        this.$emit("unauthorized", err);
+      }
+    });
+  }
+
+  updateBookmark = () => {
+    const tags = this.tags.map(t => this.cleanTag(t));
+
+    const params = {
+      tags,
+      public: this.bookmark.public,
+    };
+
+    this.isLoading = true;
+
+    this.api().put("bookmarks/" + this.bookmark.id, params).then(resp => {
+      this.bookmark = resp.data.data;
+      this.tags = this.bookmark.tags.map(t => `#${t}`);
+
+      this.$ga.event("bookmark", "updated", "Updated bookmark in browser extension", 2);
+
+      setTimeout(() => {
+        this.isLoading = false;
+      }, 100);
+    }).catch(resp => {
+      console.error("Error updating bookmark", resp);
+    });
+  }
+
+  deleteBookmark = () => {
+    this.isLoading = true;
+
+    this.api().delete("bookmarks/" + this.bookmark.id).then(() => {
+      setTimeout(() => {
+        this.isLoading = false;
+      }, 100);
+
+      setTimeout(() => {
+        this.$emit("close");
+      }, 1000);
+
+      this.$ga.event("bookmark", "removed", "Removed bookmark in browser extension", 2);
+    });
+  }
+
+  disconnectWS = () => {
+    if (ws && ws.readyState <= 1) {
+      ws.close();
+    }
+
+    ws = null;
+  }
+
+  connectWS = () => {
+    if (ws && ws.readyState <= 1) {
+      console.log("WS connection already established");
+      return;
+    }
+    ws = new ReconnectingWebSocket(process.env.REALTIME_SERVICE_WSS);
+
+    ws.onopen = () => {
+      this.api().get("user/realtime_token")
+        .then((resp) => {
+          const msg = {
+            event: "authenticate",
+            data: resp.data.token,
+          };
+          ws.send(JSON.stringify(msg));
+
+          console.log("WS Connected");
+        })
+        .catch(err => console.error("Error fetching realtime token", err.response));
+    };
+
+    ws.onmessage = (event) => {
+      const msg = JSON.parse(event.data);
+
+      switch (msg.event) {
+        case "subscribed": {
+          const channelName = JSON.parse(msg.data).channel;
+          console.log(`Subscribed to channel ${channelName}`);
+          break;
+        }
+        default: {
+          const evenData = JSON.parse(msg.data);
+          console.log(`Realtime: ${msg.event}`, evenData);
+          if (msg.event === "bookmark_updated") {
+            console.log("upsertBookmark", evenData.data);
+            this.bookmark = evenData.data;
+          }
+        }
+      }
+    };
+
+    ws.onclose = (event) => {
+      console.error("WS Closed", event);
+    };
+  }
+*/
 }
