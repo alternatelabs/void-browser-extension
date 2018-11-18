@@ -9,13 +9,13 @@ interface IAppProps {
 
 class App extends Component<IAppProps, {}> {
   render() {
-    const apiRoot = ""
+    const { url, host, apiRoot } = this.props
     const apiToken = ""
     return (
-      <div className="void-ext">
+      <div className="void-ext" style={{ minWidth: "480px", minHeight: "120px" }}>
         <Bookmarker
-          url={window.location.href}
-          host={window.location.host}
+          url={url}
+          host={host}
           apiRoot={apiRoot}
           apiToken={apiToken}
         />

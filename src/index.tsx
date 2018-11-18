@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { browser } from "webextension-polyfill-ts"
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
@@ -21,7 +20,18 @@ function loadApp() {
   ReactDOM.render(app, document.getElementById('root'));
 }
 
-/*global browser*/
+interface IBrowserTab {
+  url: string;
+}
+interface IBrowserTabs {
+  query: (options: { active: boolean, currentWindow: boolean }) => Promise<IBrowserTab[]>
+}
+interface IBrowser {
+  tabs: IBrowserTabs;
+}
+
+declare var browser: IBrowser
+
 if (typeof browser !== "undefined" && browser.tabs) {
   console.log("Fetching Tabs");
   browser.tabs.query({
