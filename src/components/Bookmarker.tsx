@@ -49,16 +49,14 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
     isLoading: true,
     bookmark: { public: false, tags: [], metadata: {} },
     tags: [],
-    suggestions: [
-      { id: 1, name: "ruby"  },
-      { id: 2, name: "react"  }
-    ],
+    suggestions: [],
     feedPresent: false,
     isSubscribed: false,
   }
 
   componentDidMount() {
     this.findOrCreateBookmark()
+    this.fetchSuggestions()
   }
 
   render() {
@@ -68,7 +66,7 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
     return (
       <div className={`void-bookmarklet ${containerClass}`}>
         <span className="text">Added to the void</span>
-        <span className="delete" onClick={() => {}}>Remove this page</span>
+        <span className="delete" onClick={this.deleteBookmark}>Remove this page</span>
         <ReactTags
           tags={tags}
           suggestions={suggestions}
@@ -80,7 +78,7 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
         <div className="actions">
           <Loading isLoading={isLoading} />
           <div className="saving-state">{host}</div>
-          <div className="rssfeed">
+          <div className={`rssfeed ${feedPresent ? "" : "-disabled"} ${isSubscribed ? "-active" : ""}`}>
             <svg onClick={this.toggleFeedSubscription} width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
               <desc>Created with Sketch.</desc>
               <defs></defs>
@@ -153,8 +151,10 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
   }
 
   toggleVisibility = () => {
-    let { bookmark } = this.state
-    bookmark.public = !bookmark.public
+    let { bookmark, isLoading } = this.state
+    if (isLoading) return
+    console.log("toggleVisibility", bookmark, bookmark.public)
+    bookmark.public = bookmark.public ? false : true
     this.setState({ bookmark }, this.updateBookmark)
   }
 
@@ -198,8 +198,9 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
       console.log("findOrCreateBookmark", resp.data);
       const bookmark = resp.data.data as IBookmark
       const tags = bookmark.tags.map(t => ({ id: t, name: `#${t}` }));
-      this.setState({ bookmark, tags })
-      this.checkFeedStatus(bookmark.metadata);
+      this.setState({ bookmark, tags }, () => {
+        this.checkFeedStatus(bookmark.metadata)
+      })
 
       if (resp.status === 202) {
         // this.$ga.event("bookmark", "added", "Added bookmark from browser extension", 1);
@@ -218,11 +219,23 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
     });
   }
 
+  fetchSuggestions = () => {
+    this.api()
+      .get("tags")
+      .then(resp => resp.data.data)
+      .then(tags => {
+        const suggestions = tags.map((t: { count: number, tag: string }, i: number) => ({ id: i, name: cleanTagName(t.tag) }))
+        console.log("Fetched suggestions", suggestions)
+        this.setState({ suggestions })
+      })
+      .catch(err => console.error("Error fetching suggestions", err.response || err))
+  }
+
   updateBookmark = () => {
     let { bookmark } = this.state
     const tags = this.state.tags.map(t => cleanTagName(t.name))
 
-    console.log("updateBookmark() called!")
+    console.log("updateBookmark() called!", bookmark)
 
     const params = {
       tags,

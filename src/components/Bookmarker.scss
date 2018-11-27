@@ -56,7 +56,11 @@ $font-stack: -apple-system, BlinkMacSystemFont,
 
     .react-tags__search input {
       font-family: $font-stack;
-      font-size: 15px !important;
+      font-size: 14px;
+    }
+
+    .react-tags__selected-tag-name {
+      font-size: 15px;
     }
   }
 
