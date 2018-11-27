@@ -107,14 +107,12 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
   handleTagDelete = (i: number) => {
     const tags = this.state.tags.slice(0)
     tags.splice(i, 1)
-    console.log("Removing tag", tags)
     this.setState({ tags }, this.updateBookmark)
   }
 
   handleTagAdd = (tag: Tag) => {
     tag.name = `#${cleanTagName(tag.name)}`
     const tags = [...this.state.tags, tag]
-    console.log("Setting new tags", tags)
     this.setState({ tags }, this.updateBookmark)
   }
 
@@ -161,7 +159,7 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
   toggleReadLater = () => {
     const { tags, isLoading } = this.state
 
-    if (isLoading) return console.error("Currently loading cant toggle Read later")
+    if (isLoading) return
 
     if (this.readLater()) {
       const index = tags.map(t => t.name).indexOf("#reading-list")
@@ -169,7 +167,6 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
     } else {
       tags.push({ id: "reading-list", name: "#reading-list" })
     }
-    console.log("Update bookmark through toggleReadLater()")
     this.updateBookmark()
   }
 
@@ -195,7 +192,7 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
   findOrCreateBookmark = () => {
     const { url } = this.props
     this.api().post("bookmarks", { url: url }).then(resp => {
-      console.log("findOrCreateBookmark", resp.data);
+      console.log("findOrCreateBookmark", resp.data)
       const bookmark = resp.data.data as IBookmark
       const tags = bookmark.tags.map(t => ({ id: t, name: `#${t}` }));
       this.setState({ bookmark, tags }, () => {
@@ -225,7 +222,6 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
       .then(resp => resp.data.data)
       .then(tags => {
         const suggestions = tags.map((t: { count: number, tag: string }, i: number) => ({ id: i, name: cleanTagName(t.tag) }))
-        console.log("Fetched suggestions", suggestions)
         this.setState({ suggestions })
       })
       .catch(err => console.error("Error fetching suggestions", err.response || err))
