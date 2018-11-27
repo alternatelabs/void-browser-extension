@@ -63,6 +63,8 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
     const { host, containerClass } = this.props
     const { isLoading, bookmark, tags, suggestions, feedPresent, isSubscribed } = this.state
 
+    console.log("rendering", bookmark)
+
     return (
       <div className={`void-bookmarklet ${containerClass}`}>
         <span className="text">Added to the void</span>
@@ -89,11 +91,11 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
               </g>
             </svg>
           </div>
-          { bookmark.public ?
+          {/* { bookmark.public ?
             <img src={lockOpen} className="visibility -public" onClick={this.toggleVisibility} />
             :
             <img src={lockClosed} className="visibility" onClick={this.toggleVisibility} />
-          }
+          } */}
           <label className="read-it-later" htmlFor="bookmark_read_later" onClick={this.toggleReadLater}>
             <input type="checkbox" id="bookmark_read_later" name="bookmark_read_later" checked={this.readLater()} />
             Read later
@@ -235,7 +237,7 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
 
     const params = {
       tags,
-      public: bookmark.public,
+      // public: bookmark.public,
     }
 
     this.setState({ isLoading: true })
