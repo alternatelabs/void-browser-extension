@@ -9,10 +9,16 @@ import "./Bookmarker.scss"
 import "./ReactTags.css"
 import { AxiosInstance } from "axios";
 
+interface IBookmarkMetadata {
+  feed_url?: string;
+  feed_id?: number;
+}
+
 interface IBookmark {
+  id?: number;
   public: boolean;
   tags: string[];
-  metadata: object;
+  metadata: IBookmarkMetadata;
 }
 
 interface IBookmarkerProps {
@@ -39,7 +45,7 @@ function cleanTagName(tag: string) {
 }
 
 export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerState> {
-  state = {
+  state: IBookmarkerState = {
     isLoading: true,
     bookmark: { public: false, tags: [], metadata: {} },
     tags: [],
@@ -63,7 +69,6 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
       <div className={`void-bookmarklet ${containerClass}`}>
         <span className="text">Added to the void</span>
         <span className="delete" onClick={() => {}}>Remove this page</span>
-        {/* <input-tag :on-change="tagsChange" :tags="tags" placeholder="Add tags"></input-tag> */}
         <ReactTags
           tags={tags}
           suggestions={suggestions}
@@ -92,7 +97,7 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
             <img src={lockClosed} className="visibility" onClick={this.toggleVisibility} />
           }
           <label className="read-it-later" htmlFor="bookmark_read_later" onClick={this.toggleReadLater}>
-            <input type="checkbox" id="bookmark_read_later" name="bookmark_read_later" onClick={this.toggleReadLater} />
+            <input type="checkbox" id="bookmark_read_later" name="bookmark_read_later" checked={this.readLater()} />
             Read later
           </label>
           <span className="ui-button" onClick={this.done}>Save</span>
@@ -104,26 +109,83 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
   handleTagDelete = (i: number) => {
     const tags = this.state.tags.slice(0)
     tags.splice(i, 1)
-    this.setState({ tags })
+    console.log("Removing tag", tags)
+    this.setState({ tags }, this.updateBookmark)
   }
 
   handleTagAdd = (tag: Tag) => {
     tag.name = `#${cleanTagName(tag.name)}`
     const tags = [...this.state.tags, tag]
-    this.setState({ tags })
+    console.log("Setting new tags", tags)
+    this.setState({ tags }, this.updateBookmark)
   }
 
-  toggleFeedSubscription = () => {}
+  checkFeedStatus = (metadata: IBookmarkMetadata) => {
+    if (!metadata || !metadata.feed_url || !metadata.feed_id) return;
 
-  toggleVisibility = () => {}
+    this.setState({ feedPresent: true })
 
-  toggleReadLater = () => {}
+    this.api().get(`feeds/${metadata.feed_id}`)
+      .then(() => {
+        this.setState({ isSubscribed: true })
+      })
+      .catch(err => console.error(err));
+  }
 
-  done = () => {}
+  toggleFeedSubscription = () => {
+    const { isSubscribed, feedPresent, bookmark } = this.state
+
+    if (!feedPresent) return
+
+    if (isSubscribed) {
+      this.api().delete(`feeds/${bookmark.metadata.feed_id}`)
+        .then(() => {
+          this.setState({ isSubscribed: false })
+          // this.$ga.event("feed", "unsubscribe", "Updated feed subscription", 1)
+        })
+    } else {
+      this.api().post("feeds", { url: bookmark.metadata.feed_url })
+        .then(() => {
+          this.setState({ isSubscribed: true })
+          // this.$ga.event("feed", "subscribe", "Updated feed subscription", 1)
+        })
+    }
+  }
+
+  toggleVisibility = () => {
+    let { bookmark } = this.state
+    bookmark.public = !bookmark.public
+    this.setState({ bookmark }, this.updateBookmark)
+  }
+
+  toggleReadLater = () => {
+    const { tags, isLoading } = this.state
+
+    if (isLoading) return console.error("Currently loading cant toggle Read later")
+
+    if (this.readLater()) {
+      const index = tags.map(t => t.name).indexOf("#reading-list")
+      tags.splice(index, 1)
+    } else {
+      tags.push({ id: "reading-list", name: "#reading-list" })
+    }
+    console.log("Update bookmark through toggleReadLater()")
+    this.updateBookmark()
+  }
+
+  done = () => {
+    window.close()
+  }
 
   readLater = () => {
-    // return this.state.tags.map(t => t.name).indexOf("#reading-list") > -1;
-    return false
+    return this.state.tags.map(t => t.name).indexOf("#reading-list") > -1
+  }
+
+  feedTitle = () => {
+    const { feedPresent, isSubscribed } = this.state
+    if (!feedPresent) return "No feed detected"
+    if (!isSubscribed) return "Subscribe to feed"
+    return "Unsubscribe from feed"
   }
 
   api = (): AxiosInstance => {
@@ -137,7 +199,7 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
       const bookmark = resp.data.data as IBookmark
       const tags = bookmark.tags.map(t => ({ id: t, name: `#${t}` }));
       this.setState({ bookmark, tags })
-      // this.checkFeedStatus(bookmark.metadata);
+      this.checkFeedStatus(bookmark.metadata);
 
       if (resp.status === 202) {
         // this.$ga.event("bookmark", "added", "Added bookmark from browser extension", 1);
@@ -155,53 +217,57 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
       }
     });
   }
-/*
+
   updateBookmark = () => {
-    const tags = this.tags.map(t => this.cleanTag(t));
+    let { bookmark } = this.state
+    const tags = this.state.tags.map(t => cleanTagName(t.name))
+
+    console.log("updateBookmark() called!")
 
     const params = {
       tags,
-      public: this.bookmark.public,
-    };
+      public: bookmark.public,
+    }
 
-    this.isLoading = true;
+    this.setState({ isLoading: true })
 
-    this.api().put("bookmarks/" + this.bookmark.id, params).then(resp => {
-      this.bookmark = resp.data.data;
-      this.tags = this.bookmark.tags.map(t => `#${t}`);
+    this.api().put("bookmarks/" + bookmark.id, params).then(resp => {
+      bookmark = resp.data.data
+      const newTags = bookmark.tags.map(t => ({ id: t, name: `#${cleanTagName(t)}` }));
 
-      this.$ga.event("bookmark", "updated", "Updated bookmark in browser extension", 2);
+      this.setState({ bookmark, tags: newTags })
+
+      // this.$ga.event("bookmark", "updated", "Updated bookmark in browser extension", 2);
 
       setTimeout(() => {
-        this.isLoading = false;
+        this.setState({ isLoading: false })
       }, 100);
     }).catch(resp => {
-      console.error("Error updating bookmark", resp);
+      console.error("Error updating bookmark", resp)
     });
   }
 
   deleteBookmark = () => {
-    this.isLoading = true;
+    const { bookmark } = this.state
 
-    this.api().delete("bookmarks/" + this.bookmark.id).then(() => {
+    this.setState({ isLoading: true })
+
+    this.api().delete("bookmarks/" + bookmark.id).then(() => {
+      // this.$ga.event("bookmark", "removed", "Removed bookmark in browser extension", 2);
+
       setTimeout(() => {
-        this.isLoading = false;
-      }, 100);
+        this.setState({ isLoading: false })
 
-      setTimeout(() => {
-        this.$emit("close");
-      }, 1000);
-
-      this.$ga.event("bookmark", "removed", "Removed bookmark in browser extension", 2);
+        setTimeout(() => this.done(), 1000)
+      }, 100)
     });
   }
-*/
+
   disconnectWS = () => {
     if (ws && ws.readyState <= 1) {
-      ws.close();
+      ws.close()
     }
-
-    ws = null;
+    ws = null
   }
 
   connectWS = () => {
