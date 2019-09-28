@@ -220,7 +220,7 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
 
   fetchSuggestions = () => {
     this.api()
-      .get("tags")
+      .get("tags", { params: { limit: 100 } })
       .then(resp => resp.data.data)
       .then(tags => {
         const suggestions = tags.map((t: { count: number, tag: string }, i: number) => ({ id: i, name: cleanTagName(t.tag) }))
