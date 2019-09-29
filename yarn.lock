@@ -756,7 +756,7 @@
   dependencies:
     regenerator-runtime "^0.13.2"
 
-"@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.3.4", "@babel/runtime@^7.4.2", "@babel/runtime@^7.4.5":
+"@babel/runtime@^7.0.0", "@babel/runtime@^7.3.4", "@babel/runtime@^7.4.2", "@babel/runtime@^7.4.5":
   version "7.6.2"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.6.2.tgz#c3d6e41b304ef10dcf13777a33e7694ec4a9a6dd"
   dependencies:
@@ -1206,12 +1206,6 @@
   dependencies:
     "@types/react" "*"
     "@types/react-native" "*"
-    csstype "^2.2.0"
-
-"@types/styled-system@^3.0.8":
-  version "3.2.2"
-  resolved "https://registry.yarnpkg.com/@types/styled-system/-/styled-system-3.2.2.tgz#a40b30baf20a8d9820808688a370a973cb778e7c"
-  dependencies:
     csstype "^2.2.0"
 
 "@types/yargs-parser@*":
@@ -8404,13 +8398,6 @@ styled-components@^4.4.0:
     stylis "^3.5.0"
     stylis-rule-sheet "^0.0.10"
     supports-color "^5.5.0"
-
-styled-system@^3.1.11:
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/styled-system/-/styled-system-3.2.1.tgz#491e1e6f88d7ee021f6f49376f12852cde8007cb"
-  dependencies:
-    "@babel/runtime" "^7.1.2"
-    prop-types "^15.6.2"
 
 stylehacks@^4.0.0:
   version "4.0.3"
