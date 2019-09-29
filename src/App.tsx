@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Bookmarker from "./components/Bookmarker"
-import api from "./helpers/api"
+import { createFetchAPI } from "./helpers/api"
 import "./assets/app-styles.css"
 import voidIcon from "./assets/logo-dark.svg"
 
@@ -26,6 +26,37 @@ class App extends Component<IAppProps, IAppState> {
       email: "",
       password: "",
       passwordError: false
+    }
+  }
+
+  onSignin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const params = {
+      email: this.state.email,
+      password: this.state.password
+    };
+
+    this.setState({ passwordError: false }) // reset error state
+
+    const api = createFetchAPI(this.props.apiRoot, null)
+
+    try {
+      const resp = await api.postRequest("auth", params)
+
+      if (resp.status > 399) throw new Error(`${resp.status} Authentication failed`)
+
+      const { secure_token, data } = await resp.json()
+
+      console.log("Signed in", { secure_token, data })
+      localStorage.setItem("apiToken", secure_token)
+      localStorage.setItem("userData", JSON.stringify(data))
+      this.setState({ token: secure_token })
+    } catch(err) {
+      console.error("Error trying to sign in", err);
+      this.setState({
+        password: "",
+        passwordError: true
+      })
     }
   }
 
@@ -93,29 +124,6 @@ class App extends Component<IAppProps, IAppState> {
 
     </div>
   )
-
-  onSignin = (e: React.FormEvent<HTMLFormElement>): void => {
-    e.preventDefault()
-    const params = {
-      email: this.state.email,
-      password: this.state.password
-    };
-
-    this.setState({ passwordError: false }) // reset error state
-
-    api.instance(this.props.apiRoot, null).post("auth", params).then(resp => {
-      console.log("Signed in", resp)
-      localStorage.setItem("apiToken", resp.data.secure_token)
-      localStorage.setItem("userData", JSON.stringify(resp.data.data))
-      this.setState({ token: resp.data.secure_token })
-    }).catch(resp => {
-      console.error("Error trying to sign in", resp);
-      this.setState({
-        password: "",
-        passwordError: true
-      })
-    });
-  }
 }
 
 export default App;
