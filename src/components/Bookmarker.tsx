@@ -2,7 +2,7 @@ import React, { Component } from "react"
 import Loading from "./Loading"
 import ReactTags, { Tag } from "react-tag-autocomplete"
 import ReconnectingWebSocket from "reconnectingwebsocket"
-import { createFetchAPI } from "../helpers/api"
+import { buildURL, getRequest, postRequest, putRequest, deleteRequest } from "../helpers/api"
 import "./Bookmarker.scss"
 import "./ReactTags.css"
 
@@ -22,7 +22,6 @@ interface IBookmarkerProps {
   url: string;
   host: string;
   apiRoot: string;
-  apiToken: string;
 }
 
 interface IBookmarkerState {
@@ -72,7 +71,7 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
 
     this.setState({ feedPresent: true })
 
-    const resp = await this.fetchApi().getRequest(`feeds/${metadata.feed_id}`)
+    const resp = await getRequest(this.apiURL(`feeds/${metadata.feed_id}`))
 
     if (resp.status < 400) {
       this.setState({ isSubscribed: true })
@@ -85,11 +84,11 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
     if (!feedPresent) return
 
     if (isSubscribed) {
-      await this.fetchApi().deleteRequest(`feeds/${bookmark.metadata.feed_id}`)
+      await deleteRequest(this.apiURL(`feeds/${bookmark.metadata.feed_id}`))
       this.setState({ isSubscribed: false })
       // this.$ga.event("feed", "unsubscribe", "Updated feed subscription", 1)
     } else {
-      await this.fetchApi().postRequest("feeds", { url: bookmark.metadata.feed_url })
+      await postRequest(this.apiURL("feeds"), { url: bookmark.metadata.feed_url })
       this.setState({ isSubscribed: true })
       // this.$ga.event("feed", "subscribe", "Updated feed subscription", 1)
     }
@@ -132,14 +131,14 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
     return "Unsubscribe from feed"
   }
 
-  fetchApi = () => {
-    return createFetchAPI(this.props.apiRoot, this.props.apiToken)
+  apiURL = (path: string) => {
+    return buildURL(this.props.apiRoot, path)
   }
 
   findOrCreateBookmark = async () => {
     const { url } = this.props
     try {
-      const resp = await this.fetchApi().postRequest("bookmarks", { url })
+      const resp = await postRequest(this.apiURL("bookmarks"), { url })
       if (resp.status > 202) {
         console.error("Error running findOrCreateBookmark", resp)
         return
@@ -168,7 +167,7 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
 
   fetchSuggestions = async () => {
     try {
-      const resp = await this.fetchApi().getRequest("tags", { limit: 250 })
+      const resp = await getRequest(this.apiURL("tags"), { limit: 250 })
       const json = await resp.json()
       const tags = json.data
       const suggestions = tags.map((t: { count: number, tag: string }, i: number) => ({ id: i, name: cleanTagName(t.tag) }))
@@ -187,7 +186,7 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
     this.setState({ isLoading: true })
 
     try {
-      const resp = await this.fetchApi().putRequest(`bookmarks/${bookmark.id}`, { tags })
+      const resp = await putRequest(this.apiURL(`bookmarks/${bookmark.id}`), { tags })
       const json = await resp.json()
 
       bookmark = json.data
@@ -211,7 +210,7 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
     this.setState({ isLoading: true })
 
     try {
-      await this.fetchApi().deleteRequest(`bookmarks/${bookmark.id}`)
+      await deleteRequest(this.apiURL(`bookmarks/${bookmark.id}`))
 
       // this.$ga.event("bookmark", "removed", "Removed bookmark in browser extension", 2);
 
@@ -241,7 +240,7 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
 
     ws.onopen = async () => {
       try {
-        const resp = await this.fetchApi().getRequest("user/realtime_token")
+        const resp = await getRequest(this.apiURL("user/realtime_token"))
         const json = await resp.json()
         const msg = {
           event: "authenticate",
@@ -282,9 +281,7 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
 
   render() {
     const { host } = this.props
-    const { isLoading, bookmark, tags, suggestions, feedPresent, isSubscribed } = this.state
-
-    console.log("rendering", bookmark)
+    const { isLoading, tags, suggestions, feedPresent, isSubscribed } = this.state
 
     return (
       <div className={`void-bookmarklet`}>

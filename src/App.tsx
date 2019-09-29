@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Bookmarker from "./components/Bookmarker"
-import { createFetchAPI } from "./helpers/api"
+import { postRequest, buildURL } from "./helpers/api"
 import "./assets/app-styles.css"
 import voidIcon from "./assets/logo-dark.svg"
 
@@ -31,17 +31,17 @@ class App extends Component<IAppProps, IAppState> {
 
   onSignin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    const { email, password } = this.state
+
     const params = {
-      email: this.state.email,
-      password: this.state.password
+      email,
+      password
     };
 
     this.setState({ passwordError: false }) // reset error state
 
-    const api = createFetchAPI(this.props.apiRoot, null)
-
     try {
-      const resp = await api.postRequest("auth", params)
+      const resp = await postRequest(buildURL(this.props.apiRoot, "auth"), params)
 
       if (resp.status > 399) throw new Error(`${resp.status} Authentication failed`)
 
@@ -76,13 +76,11 @@ class App extends Component<IAppProps, IAppState> {
 
   renderBookmarker = () => {
     const { url, host, apiRoot } = this.props
-    const apiToken = this.state.token as string
     return (
       <Bookmarker
         url={url}
         host={host}
         apiRoot={apiRoot}
-        apiToken={apiToken}
       />
     )
   }
