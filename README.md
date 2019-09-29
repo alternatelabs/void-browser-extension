@@ -20,9 +20,9 @@
 
 3. Use archiver to zip up all the files in static
 
-4. Upload this zip to Chome developers store
+4. Upload this zip to [Chome developers store](https://chrome.google.com/webstore/developer/edit/ibhdpomfalkdcjnmoicdjleclagcifnl)
 
-5. Upload to mozilla add ons
+5. Upload to [mozilla add ons](https://addons.mozilla.org/en-US/developers/addons)
 
     ```
     Put link to https://github.com/alternatelabs/void-browser-extension in **Notes for Reviewer**
