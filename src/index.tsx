@@ -1,16 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+import App, { IAppProps } from './App';
 import * as serviceWorker from './serviceWorker';
 
-const data = {
+const initialData: IAppProps = {
   url: "https://pooreffort.com/",
   host: "pooreffort.com",
   apiRoot: String(process.env.REACT_APP_API_BASE_URL),
 }
 
-function loadApp() {
+function loadApp(data: IAppProps) {
   const app = (
     <App
       {...data}
@@ -20,7 +20,7 @@ function loadApp() {
   ReactDOM.render(app, document.getElementById('root'));
 }
 
-interface IBrowserTab {
+type IBrowserTab = {
   url: string;
 }
 interface IBrowserTabs {
@@ -43,16 +43,18 @@ if (typeof browser !== "undefined" && browser.tabs) {
     if (typeof activeTab.url === "string") {
       parser.href = activeTab.url;
       console.log("Active Tab", parser.hostname);
-      data.host = parser.hostname;
-      data.url = activeTab.url;
-      loadApp();
+      loadApp({
+        ...initialData,
+        url: activeTab.url,
+        host: parser.hostname
+      });
     } else {
       console.error("Current tab doesn't have a URL", activeTab);
     }
   });
 } else {
   console.log("No tabs loading add with defaults");
-  loadApp();
+  loadApp(initialData);
 }
 
 // If you want your app to work offline and load faster, you can change

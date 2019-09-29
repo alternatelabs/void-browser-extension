@@ -4,13 +4,13 @@ import api from "./helpers/api"
 import "./assets/app-styles.css"
 import voidIcon from "./assets/logo-dark.svg"
 
-interface IAppProps {
+export type IAppProps = {
   url: string;
   host: string;
   apiRoot: string;
 }
 
-interface IAppState {
+type IAppState = {
   token: string | null;
   email: string;
   password: string;
@@ -30,7 +30,6 @@ class App extends Component<IAppProps, IAppState> {
   }
 
   render() {
-    const { url, host, apiRoot } = this.props
     const { token } = this.state
     return (
       <div className="void-ext" style={{ minWidth: "480px", minHeight: "120px" }}>
@@ -60,7 +59,7 @@ class App extends Component<IAppProps, IAppState> {
   renderLogin = () => (
     <div className="container -auth">
       <div className="padded-box">
-        <img src={voidIcon} width="69" height="20" />
+        <img src={voidIcon} alt="Void" width="69" height="20" />
       </div>
 
       { this.state.passwordError &&
@@ -86,8 +85,8 @@ class App extends Component<IAppProps, IAppState> {
           </div>
 
           <ul className="other-links">
-            {/* <li><a href="https://voidapp.co/signups/new" target="_blank">Sign Up</a></li> */}
-            <li><a href="https://voidapp.co/password_resets/new" target="_blank">Forgot Password</a></li>
+            {/* <li><a href="https://voidapp.co/signups/new" rel="noopener noreferrer" target="_blank">Sign Up</a></li> */}
+            <li><a href="https://voidapp.co/password_resets/new" rel="noopener noreferrer" target="_blank">Forgot Password</a></li>
           </ul>
         </form>
       </div>

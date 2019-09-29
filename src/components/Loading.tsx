@@ -1,7 +1,6 @@
-import React, { Component } from "react"
+import React from "react"
 import styled from "styled-components"
 import checkmarkPng from "../assets/checkmark@2x.png"
-import { bgColor } from "styled-system";
 
 const options = {
   baseLineHeight: "16px",

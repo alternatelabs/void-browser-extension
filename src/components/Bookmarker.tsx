@@ -1,7 +1,5 @@
 import React, { Component } from "react"
 import Loading from "./Loading"
-import lockOpen from "../assets/icon-lock-open.svg"
-import lockClosed from "../assets/icon-lock-closed.svg"
 import ReactTags, { Tag } from "react-tag-autocomplete"
 import ReconnectingWebSocket from "reconnectingwebsocket"
 import api from "../helpers/api"
@@ -26,7 +24,6 @@ interface IBookmarkerProps {
   host: string;
   apiRoot: string;
   apiToken: string;
-  containerClass?: string;
 }
 
 interface IBookmarkerState {
@@ -41,7 +38,7 @@ interface IBookmarkerState {
 let ws: ReconnectingWebSocket | null;
 
 function cleanTagName(tag: string) {
-  return tag.toLowerCase().replace(/[^a-z0-9\-\_]/g, "")
+  return tag.toLowerCase().replace(/[^a-z0-9\-_]/g, "")
 }
 
 export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerState> {
@@ -60,13 +57,13 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
   }
 
   render() {
-    const { host, containerClass } = this.props
+    const { host } = this.props
     const { isLoading, bookmark, tags, suggestions, feedPresent, isSubscribed } = this.state
 
     console.log("rendering", bookmark)
 
     return (
-      <div className={`void-bookmarklet ${containerClass}`}>
+      <div className={`void-bookmarklet`}>
         <span className="text">Added to the void</span>
         <span className="delete" onClick={this.deleteBookmark}>Remove this page</span>
         <ReactTags
@@ -193,7 +190,7 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
 
   findOrCreateBookmark = () => {
     const { url } = this.props
-    this.api().post("bookmarks", { url: url }).then(resp => {
+    this.api().post("bookmarks", { url }).then(resp => {
       console.log("findOrCreateBookmark", resp.data)
       const bookmark = resp.data.data as IBookmark
       const tags = bookmark.tags.map(t => ({ id: t, name: `#${t}` }));
@@ -220,7 +217,7 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
 
   fetchSuggestions = () => {
     this.api()
-      .get("tags", { params: { limit: 100 } })
+      .get("tags", { params: { limit: 250 } })
       .then(resp => resp.data.data)
       .then(tags => {
         const suggestions = tags.map((t: { count: number, tag: string }, i: number) => ({ id: i, name: cleanTagName(t.tag) }))
@@ -235,14 +232,9 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
 
     console.log("updateBookmark() called!", bookmark)
 
-    const params = {
-      tags,
-      // public: bookmark.public,
-    }
-
     this.setState({ isLoading: true })
 
-    this.api().put("bookmarks/" + bookmark.id, params).then(resp => {
+    this.api().put(`bookmarks/${bookmark.id}`, { tags }).then(resp => {
       bookmark = resp.data.data
       const newTags = bookmark.tags.map(t => ({ id: t, name: `#${cleanTagName(t)}` }));
 
@@ -263,7 +255,7 @@ export default class Bookmarker extends Component<IBookmarkerProps, IBookmarkerS
 
     this.setState({ isLoading: true })
 
-    this.api().delete("bookmarks/" + bookmark.id).then(() => {
+    this.api().delete(`bookmarks/${bookmark.id}`).then(() => {
       // this.$ga.event("bookmark", "removed", "Removed bookmark in browser extension", 2);
 
       setTimeout(() => {
