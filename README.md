@@ -6,6 +6,11 @@
 
 0. Increment version in `public/manifest.json`
 
+  ```bash
+  $ git tag v1.0.2
+  $ git push --tags
+  ```
+
 1. Create a fresh build
 
   ```bash
