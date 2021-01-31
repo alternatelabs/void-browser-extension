@@ -1,57 +1,64 @@
-import qs from "qs"
+import qs from "qs";
+import storage from "../helpers/storage";
 
-type RequestType = "get" | "post" | "put" | "patch" | "delete"
+type RequestType = "get" | "post" | "put" | "patch" | "delete";
 
 type StringDict = {
-  [s: string]: string
-}
+  [s: string]: string;
+};
 
-type ApiToken = string | null
-
-function withAuthHeader(headers: StringDict): StringDict {
-  const apiToken: ApiToken = localStorage.getItem("apiToken")
-
+function withAuthHeader(token: any, headers: StringDict): StringDict {
   const newHeaders = {
     ...headers,
-  }
+  };
 
-  console.log("withAuthHeader", apiToken)
+  console.log("withAuthHeader", token);
 
-  if (apiToken) newHeaders["Authorization"] = `Token ${apiToken}`
+  if (typeof token === "string") newHeaders["Authorization"] = `Token ${token}`;
 
-  return newHeaders
+  return newHeaders;
 }
 
-const makeRequest = async (requestType: RequestType, url: string, params: any | null) => {
+const makeRequest = async (
+  requestType: RequestType,
+  url: string,
+  params: any | null
+) => {
+  const data = await storage.get();
   return await fetch(url, {
     method: requestType,
-    headers: withAuthHeader({
+    headers: withAuthHeader(data.token, {
       "Content-Type": "application/json",
-      "X-Requested-With": "XMLHttpRequest"
+      "X-Requested-With": "XMLHttpRequest",
     }),
     credentials: "same-origin",
-    body: params ? JSON.stringify(params) : undefined
-  })
-}
+    body: params ? JSON.stringify(params) : undefined,
+  });
+};
 
-export const getRequest = async function(url: string, params: any = null) {
-  const queryString = params ? qs.stringify(params) : ""
+export const getRequest = async function (url: string, params: any = null) {
+  const queryString = params ? qs.stringify(params) : "";
+  const data = await storage.get();
   return await fetch(`${url}?${queryString}`, {
     credentials: "same-origin",
-    headers: withAuthHeader({
+    headers: withAuthHeader(data.token, {
       "Content-Type": "application/json",
-      "X-Requested-With": "XMLHttpRequest"
-    })
-  })
-}
-export const postRequest = async (url: string, params: any = null) => (await makeRequest("post", url, params))
-export const putRequest = async (url: string, params: any = null) => (await makeRequest("put", url, params))
-export const patchRequest = async (url: string, params: any = null) => (await makeRequest("patch", url, params))
-export const deleteRequest = async (url: string, params: any = null) => (await makeRequest("delete", url, params))
+      "X-Requested-With": "XMLHttpRequest",
+    }),
+  });
+};
+export const postRequest = async (url: string, params: any = null) =>
+  await makeRequest("post", url, params);
+export const putRequest = async (url: string, params: any = null) =>
+  await makeRequest("put", url, params);
+export const patchRequest = async (url: string, params: any = null) =>
+  await makeRequest("patch", url, params);
+export const deleteRequest = async (url: string, params: any = null) =>
+  await makeRequest("delete", url, params);
 
 export const buildURL = (baseURL: string, path: string) => {
-  return `${baseURL}api/v1/${path}`
-}
+  return `${baseURL}api/v1/${path}`;
+};
 
 export default {
   getRequest,
@@ -59,5 +66,5 @@ export default {
   putRequest,
   patchRequest,
   deleteRequest,
-  buildURL
+  buildURL,
 };
