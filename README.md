@@ -33,11 +33,14 @@
     Put link to https://github.com/alternatelabs/void-browser-extension in **Notes for Reviewer**
     ```
 
-6. Run a deploy for the safari bookmarklet
+6. Open xcode project for Safari extension.
 
-  ```bash
-  $ ./deploy production
-  ```
+    - Remove references to files under "Void Extension -> Resources".
+    - Then drag in all files from `build` folder to that location.
+    - "Product -> Archive"
+    - Distribute as Developer ID and download the package.
+    - Compress Void icon and upload to s3
+
 
 ## Build Setup
 
