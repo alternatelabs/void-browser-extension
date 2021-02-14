@@ -23,7 +23,7 @@
   $ cd build/
   ```
 
-3. Use archiver to zip up all the files in static
+3. Use archiver to zip up all the files in build folder.
 
 4. Upload this zip to [Chome developers store](https://chrome.google.com/webstore/developer/edit/ibhdpomfalkdcjnmoicdjleclagcifnl)
 
